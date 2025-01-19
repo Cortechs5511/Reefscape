@@ -16,4 +16,16 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+
+  public static class SwerveConstants {
+    public static final double VOLTAGE_COMPENSATION = 10;
+    public static final int CURRENT_LIMIT = 40;
+    public static final double RAMP_RATE = 0.05;
+    public static final double WHEEL_DIAMETER_IN = 4;
+    public static final double WHEEL_CIRCUMFERENCE_IN = WHEEL_DIAMETER_IN*Math.PI;
+    public static final double DRIVE_GEAR_RATIO = 8.14;
+    public static final double INCHES_PER_METER = 39.3701;
+    // convert native units of rpm to meters per second
+    public static final double VELOCITY_CONVERSION_FACTOR = WHEEL_CIRCUMFERENCE_IN / DRIVE_GEAR_RATIO / INCHES_PER_METER / 60;
+  }
 }
