@@ -33,7 +33,6 @@ public class SwerveSubsystem extends SubsystemBase {
     
     private SwerveModule[] modules;
     private SwerveDriveKinematics kinematics;
-    // private final PIDController[] drivePIDControllers;
     private final PIDController[] drivePIDControllers;
     private final PIDController[] turnPIDControllers;
     // Properties for Field oriented driving
