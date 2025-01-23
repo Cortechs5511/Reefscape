@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -28,18 +30,24 @@ public final class Constants {
   }
 
   public static class ElevatorConstants {
-    public static final int WRIST_L_ID = 60;
-    public static final int WRIST_R_ID = 61;
-
-    public static final double[] PID_VALUES = {0.25, 0.3, 0.0};
-
-    public static final double POSITION_CONVERSION_FACTOR = 50 * 22 / 12;
+    public static final int ELEVATOR_L_ID = 60;
+    public static final int ELEVATOR_R_ID = 61;
+    public static final int THROUGH_BORE_ID = 8;
 
     public static final double VOLTAGE_COMPENSATION = 5;
     public static final int CURRENT_LIMIT = 40;
     public static final IdleMode IDLE_MODE = IdleMode.kBrake;
     public static final double RAMP_RATE = 0.05;
 
+    // Update later
+    public static final double POSITION_CONVERSION_FACTOR = 50 * 22 / 12;
+
+    public static final double MAX_POS = 0.8;
+    // position of intake when down (intaking)
+    public static final double MIN_POS = 0;
+
+    public static final double RANGE = MAX_POS - MIN_POS;
+    public static final double[] PID_VALUES = {0.02, 0.0, 0.0};
   }
 
   public static class SwerveConstants {
