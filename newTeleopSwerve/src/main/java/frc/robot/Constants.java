@@ -29,6 +29,24 @@ public final class Constants {
     public static final double DEADBAND = 0.1;
   }
 
+  public static class CoralConstants {
+    public static final int CORAL_L_ID = 60;
+    public static final int CORAL_R_ID = 61;
+    public static final int CORAL_W_ID = 61;
+    public static final int THROUGH_BORE_ID = 8;
+
+    public static final double VOLTAGE_COMPENSATION = 5;
+    public static final int CURRENT_LIMIT = 40;
+    public static final IdleMode IDLE_MODE = IdleMode.kBrake;
+    public static final double RAMP_RATE = 0.05;
+
+    public static final double maximumPosition = 0.32;
+    public static final double minimumPosition = 0.0;
+
+    public static final double POWER = 0.1 ;
+
+  }
+
   public static class ElevatorConstants {
     public static final int ELEVATOR_L_ID = 60;
     public static final int ELEVATOR_R_ID = 61;
