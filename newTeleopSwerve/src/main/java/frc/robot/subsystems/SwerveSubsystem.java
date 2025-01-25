@@ -7,9 +7,9 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -73,6 +73,10 @@ public class SwerveSubsystem extends SubsystemBase {
             new PIDController(SwerveConstants.BR_TURN_PID_VALUES[0], SwerveConstants.BR_TURN_PID_VALUES[1], SwerveConstants.BR_TURN_PID_VALUES[2])  
         };
 
+        for (PIDController p : turnPIDControllers) {
+            p.enableContinuousInput(0, 2 * Math.PI);
+        };
+
         // For Field driving later 
         // odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), getPositions());
         // field = new Field2d();
@@ -102,6 +106,8 @@ public class SwerveSubsystem extends SubsystemBase {
             controllerStates[3].speedMetersPerSecond,
         };
         SmartDashboard.putNumberArray("Controller State", controllerStatesAsDoubles);
+
+        logStates();
     }
 
 
@@ -205,7 +211,7 @@ public class SwerveSubsystem extends SubsystemBase {
             SparkMaxConfig config = new SparkMaxConfig();
     
             config.voltageCompensation(SwerveConstants.VOLTAGE_COMPENSATION);
-            config.idleMode(IdleMode.kCoast);
+            config.idleMode(IdleMode.kBrake);
             config.openLoopRampRate(SwerveConstants.RAMP_RATE);
             config.closedLoopRampRate(SwerveConstants.RAMP_RATE); 
     
@@ -244,7 +250,7 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         public double getAbsoluteEncoderPos() {
-            return absoluteEncoder.getAbsolutePosition().getValueAsDouble();
+            return absoluteEncoder.getAbsolutePosition().getValueAsDouble(); 
         }
 
         public Rotation2d getAngle() {
