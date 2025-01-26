@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.core.CoreCANcoder;
+import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -29,12 +30,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveConstants;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+
 public class SwerveSubsystem extends SubsystemBase {
     
     private SwerveModule[] modules;
     private SwerveDriveKinematics kinematics;
     private final PIDController[] drivePIDControllers;
-    private final PIDController[] turnPIDControllers;
+    private final ProfiledPIDController[] turnPIDControllers;
     // Properties for Field oriented driving
     // private Gyro gyro;
     // private SwerveDriveOdometry odometry;
@@ -65,15 +69,14 @@ public class SwerveSubsystem extends SubsystemBase {
             new PIDController(SwerveConstants.BL_DRIVE_PID_VALUES[0], SwerveConstants.BL_DRIVE_PID_VALUES[1], SwerveConstants.BL_DRIVE_PID_VALUES[2]),
             new PIDController(SwerveConstants.BR_DRIVE_PID_VALUES[0], SwerveConstants.BR_DRIVE_PID_VALUES[1], SwerveConstants.BR_DRIVE_PID_VALUES[2])
         };
-
-        turnPIDControllers = new PIDController[] {
-            new PIDController(SwerveConstants.FL_TURN_PID_VALUES[0], SwerveConstants.FL_TURN_PID_VALUES[1], SwerveConstants.FL_TURN_PID_VALUES[2]),
-            new PIDController(SwerveConstants.FR_TURN_PID_VALUES[0], SwerveConstants.FR_TURN_PID_VALUES[1], SwerveConstants.FR_TURN_PID_VALUES[2]),
-            new PIDController(SwerveConstants.BL_TURN_PID_VALUES[0], SwerveConstants.BL_TURN_PID_VALUES[1], SwerveConstants.BL_TURN_PID_VALUES[2]),
-            new PIDController(SwerveConstants.BR_TURN_PID_VALUES[0], SwerveConstants.BR_TURN_PID_VALUES[1], SwerveConstants.BR_TURN_PID_VALUES[2])  
+        turnPIDControllers = new ProfiledPIDController[] {
+            new ProfiledPIDController(SwerveConstants.FL_TURN_PID_VALUES[0], SwerveConstants.FL_TURN_PID_VALUES[1], SwerveConstants.FL_TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION)),
+            new ProfiledPIDController(SwerveConstants.FR_TURN_PID_VALUES[0], SwerveConstants.FR_TURN_PID_VALUES[1], SwerveConstants.FR_TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION)),
+            new ProfiledPIDController(SwerveConstants.BL_TURN_PID_VALUES[0], SwerveConstants.BL_TURN_PID_VALUES[1], SwerveConstants.BL_TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION)),
+            new ProfiledPIDController(SwerveConstants.BR_TURN_PID_VALUES[0], SwerveConstants.BR_TURN_PID_VALUES[1], SwerveConstants.BR_TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION))  
         };
 
-        for (PIDController p : turnPIDControllers) {
+        for (ProfiledPIDController p : turnPIDControllers) {
             p.enableContinuousInput(0, 2 * Math.PI);
         };
 
@@ -120,7 +123,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
         if (resetPID) {
             for (int i = 0; i < 4; i++) {
-                turnPIDControllers[i].reset();
+                turnPIDControllers[i].reset(modules[i].getAngle().getRadians(), modules[i].getVelocity());
             }
         }
         // reset gyro button
@@ -234,7 +237,7 @@ public class SwerveSubsystem extends SubsystemBase {
             return encoder;
         }
 
-        public void setTargetState(SwerveModuleState targetState, PIDController drivePID, PIDController turnPID) {
+        public void setTargetState(SwerveModuleState targetState, PIDController drivePID, ProfiledPIDController turnPID) {
             Rotation2d currentAngle = getAngle();
             targetState.optimize(currentAngle);
             // currentState = targetState;

@@ -85,22 +85,26 @@ public final class Constants {
     public static final int[] IDS = {12, 11, 1, 22, 21, 2, 32, 31, 3, 42, 41, 4};
 
     // PID Values
-    public static final double[] FL_DRIVE_PID_VALUES = {0.02, 0.0, 0.0};
-    public static final double[] FL_TURN_PID_VALUES = {.6, 0.0, 0.0};
+    public static final double[] FL_DRIVE_PID_VALUES = {0.015, 0.0, 0.0};
+    public static final double[] FL_TURN_PID_VALUES = {.7, 0.0, 0.0};
 
-    public static final double[] FR_DRIVE_PID_VALUES = {0.02, 0.0, 0.0};
-    public static final double[] FR_TURN_PID_VALUES = {.6, 0.0, 0.0};
+    public static final double[] FR_DRIVE_PID_VALUES = {0.015, 0.0, 0.0};
+    public static final double[] FR_TURN_PID_VALUES = {.7, 0.0, 0.0};
     
-    public static final double[] BL_DRIVE_PID_VALUES = {0.02, 0.0, 0.0};
-    public static final double[] BL_TURN_PID_VALUES = {.6, 0.0, 0.0};
+    public static final double[] BL_DRIVE_PID_VALUES = {0.015, 0.0, 0.0};
+    public static final double[] BL_TURN_PID_VALUES = {.7, 0.0, 0.0};
     
-    public static final double[] BR_DRIVE_PID_VALUES = {0.02, 0.0, 0.0};
-    public static final double[] BR_TURN_PID_VALUES = {.6, 0.0, 0.0};
+    public static final double[] BR_DRIVE_PID_VALUES = {0.015, 0.0, 0.0};
+    public static final double[] BR_TURN_PID_VALUES = {.7, 0.0, 0.0};
+
+    public static final double ANGLE_MAX_VELOCITY = 7.0;
+    public static final double ANGLE_MAX_ACCELERATION = 30.0;
+    
 
     // public static final double PID_RANGE = 0.9;
 
     public static final double MAX_TRANSLATIONAL_SPEED = 100;
-    public static final double MAX_ROTATIONAL_SPEED = 75;
+    public static final double MAX_ROTATIONAL_SPEED = 75; 
 
 
     // Swerve Module Location Constants
