@@ -103,8 +103,8 @@ public final class Constants {
 
     // public static final double PID_RANGE = 0.9;
 
-    public static final double MAX_TRANSLATIONAL_SPEED = 100;
-    public static final double MAX_ROTATIONAL_SPEED = 75; 
+    public static final double MAX_TRANSLATIONAL_SPEED = 100 * 1.5;
+    public static final double MAX_ROTATIONAL_SPEED = 75 * 1.5; 
 
 
     // Swerve Module Location Constants

@@ -40,14 +40,14 @@ public class SwerveSubsystem extends SubsystemBase {
     private final PIDController[] drivePIDControllers;
     private final ProfiledPIDController[] turnPIDControllers;
     // Properties for Field oriented driving
-    // private Gyro gyro;
-    // private SwerveDriveOdometry odometry;
-    // private Field2d field;
+    private Gyro gyro;
+    private SwerveDriveOdometry odometry;
+    private Field2d field;
 
     private XboxController driveController;
 
     public SwerveSubsystem() {
-        //gyro =
+        gyro = new Gyro();
         // Initialize the swerve modules
         modules = new SwerveModule[] {
             new SwerveModule(SwerveConstants.IDS[0], SwerveConstants.IDS[1], SwerveConstants.IDS[2]),
@@ -81,15 +81,17 @@ public class SwerveSubsystem extends SubsystemBase {
         };
 
         // For Field driving later 
-        // odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), getPositions());
-        // field = new Field2d();
+        odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), getPositions());
+        field = new Field2d();
 
         driveController = new XboxController(0);
     }
 
     @Override 
     public void periodic () {
-    // transfering the controller inputs into SwerveModuleState
+        odometry.update(gyro.getRotation2d(), getPositions());
+        field.setRobotPose(getPose());
+        // transfering the controller inputs into SwerveModuleState
         ChassisSpeeds controllerSpeeds = new ChassisSpeeds(
             SwerveConstants.MAX_TRANSLATIONAL_SPEED * -driveController.getLeftY(), 
             SwerveConstants.MAX_TRANSLATIONAL_SPEED * -driveController.getLeftX(), 
@@ -127,24 +129,41 @@ public class SwerveSubsystem extends SubsystemBase {
             }
         }
         // reset gyro button
-        // if (resetGyro) {
-        //     gyro.resetGyro();
-        // }
+        if (resetGyro) {
+            gyro.resetGyro();
+        }
 
         // implementing field logic
-        // if (fieldRelative) {
-        //     driveFieldRelative(newDesiredSpeeds);
-        // }
-        // else {
-        //     driveRobotRelative(newDesiredSpeeds);
-        // }
+        if (fieldRelative) {
+            driveFieldRelative(newDesiredSpeeds);
+        }
+        else {
+            driveRobotRelative(newDesiredSpeeds);
+        }
 
-        driveRobotRelative(newDesiredSpeeds);
+        // driveRobotRelative(newDesiredSpeeds);
     }
 
-    // public void driveFieldRelative(ChassisSpeeds fieldRelativeSpeeds) {
-    //     driveRobotRelative(ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, getPose().getRotation()));
-    // }
+    public Pose2d getPose() {
+        return odometry.getPoseMeters();
+    }
+
+    public SwerveModulePosition[] getPositions() {
+        SwerveModulePosition[] positions = new SwerveModulePosition[modules.length];
+        for (int i = 0; i < modules.length; i++) {
+            positions[i] = modules[i].getPosition();
+        }
+
+        return positions;
+    }
+
+    public void resetPose(Pose2d pose) {
+        odometry.resetPosition(gyro.getRotation2d(), getPositions(), pose);
+    }
+
+    public void driveFieldRelative(ChassisSpeeds fieldRelativeSpeeds) {
+        driveRobotRelative(ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, getPose().getRotation()));
+    }
 
     public void driveRobotRelative(ChassisSpeeds robotRelativeSpeeds) {
         ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(robotRelativeSpeeds, 0.02);
@@ -180,7 +199,7 @@ public class SwerveSubsystem extends SubsystemBase {
         };
         
         SmartDashboard.putNumberArray("Module State", loggingState);
-        // SmartDashboard.putNumber("Gyro Radians", gyro.getRotation2d().getRadians());
+        SmartDashboard.putNumber("Gyro Radians", gyro.getRotation2d().getRadians());
 
         SmartDashboard.putNumber("Swerve/FL Velocity", modules[0].getVelocity());
         SmartDashboard.putNumber("Swerve/FR Velocity", modules[1].getVelocity());
@@ -241,6 +260,7 @@ public class SwerveSubsystem extends SubsystemBase {
             Rotation2d currentAngle = getAngle();
             targetState.optimize(currentAngle);
             // currentState = targetState;
+            currentPosition = new SwerveModulePosition(currentPosition.distanceMeters + (currentState.speedMetersPerSecond * 0.02), currentState.angle);
             double driveOutput = drivePID.calculate(getVelocity(), targetState.speedMetersPerSecond);
             double turnOutput = turnPID.calculate(getAngle().getRadians(), targetState.angle.getRadians());
             
@@ -263,29 +283,33 @@ public class SwerveSubsystem extends SubsystemBase {
         public SwerveModuleState getState() {
             return new SwerveModuleState(getVelocity(), getAngle());
         }
+
+        public SwerveModulePosition getPosition() {
+            return currentPosition;
+        }
     }
 
-    //class Gyro {
-    //    private AHRS navX;
+    class Gyro {
+       private AHRS navX;
 
-    //     public Gyro() {
-    //         navX = new AHRS(NavXComType.kMXP_SPI);  
-    //     }
+        public Gyro() {
+            navX = new AHRS(NavXComType.kMXP_SPI);  
+        }
 
-    //     public Rotation2d getRotation2d() {
-    //         // Get yaw in degrees from the navX
-    //         double yawDegrees = navX.getYaw(); 
+        public Rotation2d getRotation2d() {
+            // Get yaw in degrees from the navX
+            double yawDegrees = -1 * navX.getYaw() - 135; 
             
-    //         // Convert degrees to radians (Rotation2d uses radians)
-    //         double yawRadians = Math.toRadians(yawDegrees);
+            // Convert degrees to radians (Rotation2d uses radians)
+            double yawRadians = Math.toRadians(yawDegrees);
             
-    //         // Create and return a Rotation2d object
-    //         return new Rotation2d(yawRadians);
-    //     }
+            // Create and return a Rotation2d object
+            return new Rotation2d(yawRadians);
+        }
 
-    //     public void resetGyro() {
-    //         navX.reset();
-    //     }
+        public void resetGyro() {
+            navX.reset();
+        }
 
-    // }
+    }
 }
