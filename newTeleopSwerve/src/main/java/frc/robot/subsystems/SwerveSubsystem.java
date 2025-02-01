@@ -29,9 +29,12 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveConstants;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+
+import frc.robot.SwerveModule;
 
 public class SwerveSubsystem extends SubsystemBase {
     
@@ -205,88 +208,6 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Swerve/FR Velocity", modules[1].getVelocity());
         SmartDashboard.putNumber("Swerve/BL Velocity", modules[2].getVelocity());
         SmartDashboard.putNumber("Swerve/BR Velocity", modules[3].getVelocity());
-    }
-
-    class SwerveModule {
-        private SwerveModulePosition currentPosition;
-        private SwerveModuleState currentState;
-        private SparkMax driveMotor;
-        private SparkMax turnMotor;
-        private CoreCANcoder absoluteEncoder;
-
-        private RelativeEncoder driveEncoder;
-
-
-        public SwerveModule(int driveMotorPort, int turningMotorPort, int absoluteEncoderPort) {
-            driveMotor = createMotorController(driveMotorPort, false);
-            turnMotor = createMotorController(turningMotorPort, false);
-            absoluteEncoder = new CoreCANcoder(absoluteEncoderPort);
-
-            driveEncoder = createEncoder(driveMotor);
-
-            currentState = new SwerveModuleState(getVelocity(), getAngle());
-            currentPosition = new SwerveModulePosition();
-        }
-
-        private SparkMax createMotorController(int port, boolean isInverted) {
-            SparkMax controller = new SparkMax(port, MotorType.kBrushless);
-            SparkMaxConfig config = new SparkMaxConfig();
-    
-            config.voltageCompensation(SwerveConstants.VOLTAGE_COMPENSATION);
-            config.idleMode(IdleMode.kBrake);
-            config.openLoopRampRate(SwerveConstants.RAMP_RATE);
-            config.closedLoopRampRate(SwerveConstants.RAMP_RATE); 
-    
-            config.smartCurrentLimit(SwerveConstants.CURRENT_LIMIT);
-    
-            config.inverted(isInverted);
-    
-            config.encoder.velocityConversionFactor(SwerveConstants.VELOCITY_CONVERSION_FACTOR);
-            // for some reason causes robot to shake:
-            //     controller.burnFlash(); 
-            controller.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-            return controller;
-        }
-
-        private RelativeEncoder createEncoder(SparkMax controller) {
-            RelativeEncoder encoder = controller.getEncoder();
-            // convert from native unit of rpm to m/s
-            //encoder.setVelocityConversionFactor(SwerveConstants.VELOCITY_CONVERSION_FACTOR);
-    
-            return encoder;
-        }
-
-        public void setTargetState(SwerveModuleState targetState, PIDController drivePID, ProfiledPIDController turnPID) {
-            Rotation2d currentAngle = getAngle();
-            targetState.optimize(currentAngle);
-            // currentState = targetState;
-            currentPosition = new SwerveModulePosition(currentPosition.distanceMeters + (currentState.speedMetersPerSecond * 0.02), currentState.angle);
-            double driveOutput = drivePID.calculate(getVelocity(), targetState.speedMetersPerSecond);
-            double turnOutput = turnPID.calculate(getAngle().getRadians(), targetState.angle.getRadians());
-            
-            turnMotor.set(turnOutput);
-            driveMotor.set(driveOutput);
-        }
-
-        public double getVelocity() {
-            return driveEncoder.getVelocity();
-        }
-
-        public double getAbsoluteEncoderPos() {
-            return absoluteEncoder.getAbsolutePosition().getValueAsDouble(); 
-        }
-
-        public Rotation2d getAngle() {
-            return Rotation2d.fromRotations(getAbsoluteEncoderPos());
-        }
-
-        public SwerveModuleState getState() {
-            return new SwerveModuleState(getVelocity(), getAngle());
-        }
-
-        public SwerveModulePosition getPosition() {
-            return currentPosition;
-        }
     }
 
     class Gyro {
