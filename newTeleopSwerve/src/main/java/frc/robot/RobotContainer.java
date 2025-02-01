@@ -9,6 +9,11 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.swerveDrive;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -24,6 +29,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem();
+  private final SendableChooser<Command> autoChooser;
+
 
   private final OI oi = OI.getInstance();
 
@@ -36,6 +43,10 @@ public class RobotContainer {
     // Configure the trigger bindings
     m_swerveSubsystem.setDefaultCommand(new swerveDrive(m_swerveSubsystem));
     configureBindings();
+
+    // input name into buildAutoChooser method
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   /**
@@ -62,6 +73,12 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
+
+  // path planner auto
+  // public Command getAutonomousCommand() {
+  //   return autoChooser.getSelected();
+  // }
+   
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     return Autos.exampleAuto(m_exampleSubsystem);

@@ -1,21 +1,13 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.hardware.core.CoreCANcoder;
-import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
-import com.studica.frc.AHRS;
-import com.studica.frc.AHRS.NavXComType;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -24,17 +16,13 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveConstants;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
-import frc.robot.SwerveModule;
 
 public class SwerveSubsystem extends SubsystemBase {
     
@@ -83,11 +71,47 @@ public class SwerveSubsystem extends SubsystemBase {
             p.enableContinuousInput(0, 2 * Math.PI);
         };
 
-        // For Field driving later 
         odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), getPositions());
         field = new Field2d();
 
         driveController = new XboxController(0);
+
+        // path planner stuff
+        try {
+            RobotConfig config;
+            config = RobotConfig.fromGUISettings();
+
+            AutoBuilder.configure(
+            this::getPose, // Robot pose supplier
+            this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+            this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+            new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
+                    new PIDConstants(SwerveConstants.FL_DRIVE_PID_VALUES[0], SwerveConstants.FL_DRIVE_PID_VALUES[1], SwerveConstants.FL_DRIVE_PID_VALUES[2]), // Translation PID constants
+                    new PIDConstants(SwerveConstants.FL_TURN_PID_VALUES[0], SwerveConstants.FL_TURN_PID_VALUES[1], SwerveConstants.FL_TURN_PID_VALUES[2]) // Rotation PID constants
+            ),
+            config, // The robot configuration
+            () -> {
+                // Boolean supplier that controls when the path will be mirrored for the red alliance
+                // This will flip the path being followed to the red side of the field.
+        
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent()) {
+                    return alliance.get() == DriverStation.Alliance.Red;
+                }
+                return false;
+            },
+            this // Reference to this subsystem to set requirements
+        );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
+        // Set up custom logging to add the current path to a field 2d widget
+        PathPlannerLogging.setLogActivePathCallback((poses) -> field.getObject("path").setPoses(poses));
+
+        SmartDashboard.putData("Field", field);
+        
     }
 
     @Override 
@@ -151,6 +175,20 @@ public class SwerveSubsystem extends SubsystemBase {
         return odometry.getPoseMeters();
     }
 
+    public ChassisSpeeds getRobotRelativeSpeeds () {
+        return kinematics.toChassisSpeeds(getStates());
+    }
+
+    public SwerveModuleState[] getStates () { 
+        return new SwerveModuleState[] {
+                modules[0].getState(),
+                modules[1].getState(),
+                modules[2].getState(),
+                modules[3].getState()
+                };
+
+    }
+
     public SwerveModulePosition[] getPositions() {
         SwerveModulePosition[] positions = new SwerveModulePosition[modules.length];
         for (int i = 0; i < modules.length; i++) {
@@ -186,7 +224,6 @@ public class SwerveSubsystem extends SubsystemBase {
     //    for (int i = 0; i<4; i++) {
     //     modules[i].setTargetState(targetStates[i], drivePIDControllers[i], turnPIDControllers[i]);
     //    }
-    
     }
 
     public void logStates() {
@@ -210,27 +247,4 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Swerve/BR Velocity", modules[3].getVelocity());
     }
 
-    class Gyro {
-       private AHRS navX;
-
-        public Gyro() {
-            navX = new AHRS(NavXComType.kMXP_SPI);  
-        }
-
-        public Rotation2d getRotation2d() {
-            // Get yaw in degrees from the navX
-            double yawDegrees = -1 * navX.getYaw() - 135; 
-            
-            // Convert degrees to radians (Rotation2d uses radians)
-            double yawRadians = Math.toRadians(yawDegrees);
-            
-            // Create and return a Rotation2d object
-            return new Rotation2d(yawRadians);
-        }
-
-        public void resetGyro() {
-            navX.reset();
-        }
-
-    }
 }

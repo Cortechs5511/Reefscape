@@ -77,9 +77,9 @@ public final class Constants {
     public static final double WHEEL_DIAMETER_IN = 4;
     public static final double WHEEL_CIRCUMFERENCE_IN = WHEEL_DIAMETER_IN*Math.PI;
     public static final double DRIVE_GEAR_RATIO = 8.14;
-    public static final double INCHES_PER_METER = 39.3701;
+    public static final double METERS_PER_INCHES = 0.0254;
     // convert native units of rpm to meters per second
-    public static final double VELOCITY_CONVERSION_FACTOR = WHEEL_CIRCUMFERENCE_IN / DRIVE_GEAR_RATIO / INCHES_PER_METER / 60;
+    public static final double VELOCITY_CONVERSION_FACTOR = (1.0 / 60) * (1 / DRIVE_GEAR_RATIO) * (WHEEL_CIRCUMFERENCE_IN) * METERS_PER_INCHES;
 
     // IDs
     public static final int[] IDS = {12, 11, 1, 22, 21, 2, 32, 31, 3, 42, 41, 4};
@@ -99,6 +99,11 @@ public final class Constants {
 
     public static final double ANGLE_MAX_VELOCITY = 7.0;
     public static final double ANGLE_MAX_ACCELERATION = 30.0;
+
+    // feedforward values 
+    public static final double kSDrive = 0.667;
+    public static final double kVDrive = 2.4;
+    public static final double kADrive = 0.3;
     
 
     // public static final double PID_RANGE = 0.9;
