@@ -60,6 +60,8 @@ public final class Constants {
     // Update later
     public static final double POSITION_CONVERSION_FACTOR = 50 * 22 / 12;
 
+    public static final double MAX_POWER = 1.0;
+
     public static final double MAX_POS = 0.8;
     // position of intake when down (intaking)
     public static final double MIN_POS = 0;

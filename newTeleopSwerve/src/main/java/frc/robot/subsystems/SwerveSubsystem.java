@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.hardware.core.CoreCANcoder;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.studica.frc.AHRS;
@@ -290,15 +291,15 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     class Gyro {
-       private AHRS navX;
+       private Pigeon2 pigeon;
 
         public Gyro() {
-            navX = new AHRS(NavXComType.kMXP_SPI);  
+            pigeon = new Pigeon2(0);  
         }
 
         public Rotation2d getRotation2d() {
             // Get yaw in degrees from the navX
-            double yawDegrees = -1 * navX.getYaw() - 135; 
+            double yawDegrees = pigeon.getYaw().getValueAsDouble(); 
             
             // Convert degrees to radians (Rotation2d uses radians)
             double yawRadians = Math.toRadians(yawDegrees);
@@ -308,7 +309,7 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         public void resetGyro() {
-            navX.reset();
+            pigeon.reset();
         }
 
     }

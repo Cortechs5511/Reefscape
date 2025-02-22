@@ -17,8 +17,8 @@ import frc.robot.Constants.ElevatorConstants;
 
 public class Elevator extends SubsystemBase {
     // When testing, figure out which motor must be inverted
-    private final SparkMax elevatorLeft = createElevatorController(ElevatorConstants.ELEVATOR_L_ID, true);
-    private final SparkMax elevatorRight = createElevatorController(ElevatorConstants.ELEVATOR_R_ID, false);
+    private final SparkMax elevatorLeft = createElevatorController(ElevatorConstants.ELEVATOR_L_ID, false);
+    private final SparkMax elevatorRight = createElevatorController(ElevatorConstants.ELEVATOR_R_ID, true);
     private final SparkMax TBEncoderSparkMax = new SparkMax(1, MotorType.kBrushless);
 
     private final PIDController ElevatorPID = new PIDController(ElevatorConstants.PID_VALUES[0], ElevatorConstants.PID_VALUES[1],
@@ -29,10 +29,10 @@ public class Elevator extends SubsystemBase {
 
     public void setElevatorPosition(double targetPosition) {
         double elevatorOutput = ElevatorPID.calculate(getConvertedValue(), targetPosition);
-        setElevatorPower(elevatorOutput);
+        setPower(elevatorOutput);
     }
 
-    private void setElevatorPower(double speed) {
+    public void setPower(double speed) {
         elevatorLeft.set(speed);
         elevatorRight.set(speed);
     }
