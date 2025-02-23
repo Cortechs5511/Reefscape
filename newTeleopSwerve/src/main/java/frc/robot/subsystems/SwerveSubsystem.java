@@ -298,8 +298,9 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         public Rotation2d getRotation2d() {
-            // Get yaw in degrees from the navX
-            double yawDegrees = pigeon.getYaw().getValueAsDouble(); 
+            // Get yaw in degrees from the pigeon
+            // had to add an offset because it was off by 45°
+            double yawDegrees = pigeon.getYaw().getValueAsDouble()-45; 
             
             // Convert degrees to radians (Rotation2d uses radians)
             double yawRadians = Math.toRadians(yawDegrees);
