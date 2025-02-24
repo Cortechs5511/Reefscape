@@ -19,12 +19,12 @@ public class Elevator extends SubsystemBase {
     // When testing, figure out which motor must be inverted
     private final SparkMax elevatorLeft = createElevatorController(ElevatorConstants.ELEVATOR_L_ID, false);
     private final SparkMax elevatorRight = createElevatorController(ElevatorConstants.ELEVATOR_R_ID, true);
-    private final SparkMax TBEncoderSparkMax = new SparkMax(1, MotorType.kBrushless);
 
     private final PIDController ElevatorPID = new PIDController(ElevatorConstants.PID_VALUES[0], ElevatorConstants.PID_VALUES[1],
         ElevatorConstants.PID_VALUES[2]);
 
-    private final SparkAbsoluteEncoder TBEncoder = createTBEncoder(TBEncoderSparkMax);
+    //private final SparkAbsoluteEncoder TBEncoder = createTBEncoder(elevatorRight);
+    private final SparkAbsoluteEncoder TBEncoder = elevatorRight.getAbsoluteEncoder();
 
 
     public void setElevatorPosition(double targetPosition) {
@@ -66,5 +66,6 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("Elevator/Raw Position", TBEncoder.getPosition());
         SmartDashboard.putNumber("Elevator/Converted Position", getConvertedValue());
         SmartDashboard.putNumber("Elevator/Raw Velocity", TBEncoder.getVelocity());
+        System.out.println(TBEncoder.getPosition());
     }
 }
