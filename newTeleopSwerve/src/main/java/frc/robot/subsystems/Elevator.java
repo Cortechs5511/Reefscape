@@ -19,6 +19,8 @@ public class Elevator extends SubsystemBase {
     // When testing, figure out which motor must be inverted
     private final SparkMax elevatorLeft = createElevatorController(ElevatorConstants.ELEVATOR_L_ID, false);
     private final SparkMax elevatorRight = createElevatorController(ElevatorConstants.ELEVATOR_R_ID, true);
+    private double rotation = 0;
+    private double previousPos = -1;
 
     private final PIDController ElevatorPID = new PIDController(ElevatorConstants.PID_VALUES[0], ElevatorConstants.PID_VALUES[1],
         ElevatorConstants.PID_VALUES[2]);
@@ -28,7 +30,7 @@ public class Elevator extends SubsystemBase {
 
 
     public void setElevatorPosition(double targetPosition) {
-        double elevatorOutput = ElevatorPID.calculate(getConvertedValue(), targetPosition);
+        double elevatorOutput = ElevatorPID.calculate(getAccumulatedRotations(), targetPosition);
         setPower(elevatorOutput);
     }
 
@@ -37,8 +39,23 @@ public class Elevator extends SubsystemBase {
         elevatorRight.set(speed);
     }
     
-    private double getConvertedValue() { 
-        return TBEncoder.getPosition() * ElevatorConstants.POSITION_CONVERSION_FACTOR;
+    private double getAccumulatedRotations() { 
+        double currentPos = TBEncoder.getPosition();
+        double currentVelocity = TBEncoder.getVelocity();
+        if (previousPos != -1) {
+            if (currentVelocity > 0) {
+                if (currentPos < previousPos) {
+                    rotation++;
+                }
+            }
+            else if (currentVelocity < 0) {
+                if (currentPos > previousPos) {
+                    rotation--;
+                }
+            }
+        }
+        previousPos = currentPos;
+        return currentPos + rotation;
     }
 
     private SparkMax createElevatorController(int port, boolean isInverted) {
