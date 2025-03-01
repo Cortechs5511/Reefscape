@@ -2,7 +2,7 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
-
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -16,47 +16,91 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import frc.robot.Constants.ElevatorConstants;
 
 public class Elevator extends SubsystemBase {
-    // When testing, figure out which motor must be inverted
     private final SparkMax elevatorLeft = createElevatorController(ElevatorConstants.ELEVATOR_L_ID, false);
     private final SparkMax elevatorRight = createElevatorController(ElevatorConstants.ELEVATOR_R_ID, true);
-    private double rotation = 0;
-    private double previousPos = -1;
 
-    private final PIDController ElevatorPID = new PIDController(ElevatorConstants.PID_VALUES[0], ElevatorConstants.PID_VALUES[1],
-        ElevatorConstants.PID_VALUES[2]);
+    private XboxController operatorController = new XboxController(1);
 
-    //private final SparkAbsoluteEncoder TBEncoder = createTBEncoder(elevatorRight);
     private final SparkAbsoluteEncoder TBEncoder = elevatorRight.getAbsoluteEncoder();
 
+    private double cumulativeRotations = 0;
+    private double previousPos = TBEncoder.getPosition();
+    private double changeInPos = 0;
 
-    public void setElevatorPosition(double targetPosition) {
-        double elevatorOutput = ElevatorPID.calculate(getAccumulatedRotations(), targetPosition);
-        setPower(elevatorOutput);
-    }
 
     public void setPower(double speed) {
-        elevatorLeft.set(speed);
-        elevatorRight.set(speed);
-    }
-    
-    private double getAccumulatedRotations() { 
-        double currentPos = TBEncoder.getPosition();
-        double currentVelocity = TBEncoder.getVelocity();
-        if (previousPos != -1) {
-            if (currentVelocity > 0) {
-                if (currentPos < previousPos) {
-                    rotation++;
-                }
+        double slowedPower = 0.05;
+        if (operatorController.getLeftY() < 0 && getAccumulatedRotations() > 2.5) {
+            elevatorLeft.set(0);
+            elevatorRight.set(0);
+        } else if (operatorController.getLeftY() > 0 && getAccumulatedRotations() < 0) {
+            elevatorLeft.set(0);
+            elevatorRight.set(0);
+        } else {
+            if (operatorController.getLeftY() < 0 && getAccumulatedRotations() > 2.35) {
+                elevatorLeft.set(speed*slowedPower);
+                elevatorRight.set(speed*slowedPower);
+            } else if (operatorController.getLeftY() > 0 && getAccumulatedRotations() < 0.15) {
+                elevatorLeft.set(speed*slowedPower);
+                elevatorRight.set(speed*slowedPower);
+            } else {
+                elevatorLeft.set(speed);
+                elevatorRight.set(speed);
             }
-            else if (currentVelocity < 0) {
-                if (currentPos > previousPos) {
-                    rotation--;
-                }
+        }   
+    }
+
+    public void setPosition(double position) {
+        if (getAccumulatedRotations() > position) {
+            setPower(-1);
+            if (Math.abs(getAccumulatedRotations() - position) < 0.15) {
+                setPower(-0.05);
             }
         }
-        previousPos = currentPos;
-        return currentPos + rotation;
+        else if (getAccumulatedRotations() < position) {
+            setPower(1);
+            if (Math.abs(getAccumulatedRotations() - position) < 0.15) {
+                setPower(0.05);
+            }
+        }
     }
+
+    private double getAccumulatedRotations() {
+        double currentPos = TBEncoder.getPosition();
+
+        if (Math.abs(currentPos - previousPos) < 0.8) {
+            changeInPos = currentPos - previousPos;
+        } else if (currentPos < previousPos) {
+            changeInPos = currentPos + 1 - previousPos;
+        } else {
+            changeInPos = currentPos - 1 - previousPos;
+        }
+
+        previousPos = currentPos;
+        cumulativeRotations += changeInPos;
+        return cumulativeRotations;
+    }
+    
+    // private double getAccumulatedRotations() { 
+    //     double currentPos = TBEncoder.getPosition();
+    //     double currentVelocity = TBEncoder.getVelocity();
+    //     if (previousPos != -1) {
+    //         if (currentVelocity > 0.1) {
+    //             if (currentPos < previousPos) {
+    //                 cumulativeRotations++;
+    //             }
+    //         }
+    //         else if (currentVelocity < -0.1) {
+    //             if (currentPos > previousPos) {
+    //                 cumulativeRotations--;
+    //             }
+    //         }
+    //     }
+    //     previousPos = currentPos;
+    //     return currentPos + cumulativeRotations;
+    // }
+
+    
 
     private SparkMax createElevatorController(int port, boolean isInverted) {
         SparkMax controller = new SparkMax(port, MotorType.kBrushless);
@@ -72,17 +116,18 @@ public class Elevator extends SubsystemBase {
         controller.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         return controller;
     }
-
-    private SparkAbsoluteEncoder createTBEncoder(SparkMax encoderMotor) {
-        SparkAbsoluteEncoder encoder = encoderMotor.getAbsoluteEncoder();
-        return encoder;
-    }
+// 11 inches per rotation
 
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Elevator/Raw Position", TBEncoder.getPosition());
-        SmartDashboard.putNumber("Elevator/Converted Position", getConvertedValue());
+        SmartDashboard.putNumber("Elevator/Accumulated Position", getAccumulatedRotations());
         SmartDashboard.putNumber("Elevator/Raw Velocity", TBEncoder.getVelocity());
-        System.out.println(TBEncoder.getPosition());
+        if (operatorController.getXButton()) {
+            cumulativeRotations = 0;
+        }
+        if (operatorController.getBButton()) {
+            cumulativeRotations = 2.5;
+        }
     }
 }
