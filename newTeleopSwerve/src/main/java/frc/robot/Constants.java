@@ -30,9 +30,8 @@ public final class Constants {
   }
 
   public static class CoralConstants {
-    public static final int CORAL_L_ID = 60;
-    public static final int CORAL_R_ID = 61;
-    public static final int CORAL_W_ID = 61;
+    public static final int CORAL_FLYWHEEL_ID = 72;
+    public static final int CORAL_WRIST_ID = 71;
     public static final int THROUGH_BORE_ID = 8;
 
     public static final double VOLTAGE_COMPENSATION = 5;
@@ -93,17 +92,10 @@ public final class Constants {
     public static final int[] IDS = {12, 11, 1, 22, 21, 2, 32, 31, 3, 42, 41, 4};
 
     // PID Values
-    public static final double[] FL_DRIVE_PID_VALUES = {0.015, 0.0, 0.0};
-    public static final double[] FL_TURN_PID_VALUES = {.7, 0.0, 0.0};
-
-    public static final double[] FR_DRIVE_PID_VALUES = {0.015, 0.0, 0.0};
-    public static final double[] FR_TURN_PID_VALUES = {.7, 0.0, 0.0};
     
-    public static final double[] BL_DRIVE_PID_VALUES = {0.015, 0.0, 0.0};
-    public static final double[] BL_TURN_PID_VALUES = {.7, 0.0, 0.0};
     
-    public static final double[] BR_DRIVE_PID_VALUES = {0.015, 0.0, 0.0};
-    public static final double[] BR_TURN_PID_VALUES = {.7, 0.0, 0.0};
+    public static final double[] DRIVE_PID_VALUES = {0.015, 0.0, 0.0};
+    public static final double[] TURN_PID_VALUES = {.7, 0.0, 0.0};
 
     public static final double ANGLE_MAX_VELOCITY = 7.0;
     public static final double ANGLE_MAX_ACCELERATION = 30.0;

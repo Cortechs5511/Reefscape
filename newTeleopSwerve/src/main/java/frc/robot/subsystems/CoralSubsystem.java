@@ -1,32 +1,28 @@
 package frc.robot.subsystems;
-import com.revrobotics.spark.config.SparkMaxConfig;
-
-import edu.wpi.first.math.controller.PIDController;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-//import edu.wpi.first.math.controller.PIDController;
 
 import frc.robot.Constants.CoralConstants;
-import frc.robot.Constants.ElevatorConstants;
-// processor, algea l1, algea l2, coral l1, coral l2, coral l3, corall4, intake station 
-// A B X Y, LEFT JOYSTICK, RIGHT JOYSTICK BUTTON, MENU button
-// a
+
 public class CoralSubsystem extends SubsystemBase {
-    private final SparkMax coralLeft = createCoralController(CoralConstants.CORAL_L_ID, true);
-    private final SparkMax coralRight = createCoralController(CoralConstants.CORAL_R_ID, false);
-    private final SparkMax wrist = createCoralController(CoralConstants.CORAL_W_ID, false);
+    private final SparkMax flywheel = createCoralController(CoralConstants.CORAL_FLYWHEEL_ID, true);
+    private final SparkMax wrist = createCoralController(CoralConstants.CORAL_WRIST_ID, false);
+
+    private final SparkAbsoluteEncoder TBEncoder = wrist.getAbsoluteEncoder();
 
     private final RelativeEncoder wristEncoder = wrist.getEncoder();
 
     private void setCoralPower(double speed) {
-        coralLeft.set(speed);
-        coralRight.set(speed);
+        flywheel.set(speed);
     }    
     
     private void setWristPower(double speed) { 
@@ -62,4 +58,10 @@ public class CoralSubsystem extends SubsystemBase {
         return controller;
     }
 
+    
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Coral/Raw Wrist Position", TBEncoder.getPosition());
+        SmartDashboard.putNumber("Coral/Raw Wrist Velocity", TBEncoder.getVelocity());
+    }
 }
