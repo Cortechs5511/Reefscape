@@ -7,10 +7,13 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.swerveDrive;
+import frc.robot.commands.Elevator.setElevatorPosition;
+import frc.robot.commands.Elevator.setElevatorPower;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -24,6 +27,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem();
+  private final Elevator m_elevator = new Elevator();
 
   private final OI oi = OI.getInstance();
 
@@ -31,10 +35,14 @@ public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
+  private final CommandXboxController m_operatorController = 
+      new CommandXboxController(1);
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
     m_swerveSubsystem.setDefaultCommand(new swerveDrive(m_swerveSubsystem));
+    m_elevator.setDefaultCommand(new setElevatorPower(m_elevator));
     configureBindings();
   }
 
@@ -55,6 +63,10 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release. 
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    // m_operatorController.y().whileTrue(new setElevatorPosition(m_elevator, 2.0, false));
+    // m_operatorController.a().whileTrue(new setElevatorPosition(m_elevator, 1.0, false));
+    m_operatorController.y().whileTrue(new setElevatorPosition(m_elevator, 22.0, true));
+    m_operatorController.a().whileTrue(new setElevatorPosition(m_elevator, 16.0, true));
   }
 
   /**

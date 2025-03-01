@@ -167,7 +167,7 @@ public class OI {
         return driverController.getXButton();
     }
 
-    public double getWristPower() {
+    public double getElevatorPower() {
         return getOperatorLeftY();
 
     }
