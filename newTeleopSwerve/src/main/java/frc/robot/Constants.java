@@ -60,14 +60,20 @@ public final class Constants {
     // Update later
     public static final double POSITION_CONVERSION_FACTOR = 50 * 22 / 12;
 
+    // POWER STUFF
     public static final double MAX_POWER = 1.0;
 
-    public static final double MAX_POS = 0.8;
+    // approaching values
+    public static final double SLOWED_POWER_UP = 0.05;
+    public static final double SLOWED_POWER_DOWN = 0.075;
+
+
+
+    public static final double MAX_POS = 2.5;
     // position of intake when down (intaking)
     public static final double MIN_POS = 0;
 
     public static final double RANGE = MAX_POS - MIN_POS;
-    public static final double[] PID_VALUES = {0.02, 0.0, 0.0};
   }
 
   public static class SwerveConstants {

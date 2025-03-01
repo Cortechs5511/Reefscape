@@ -29,20 +29,19 @@ public class Elevator extends SubsystemBase {
 
 
     public void setPower(double speed) {
-        double slowedPower = 0.05;
-        if (operatorController.getLeftY() < 0 && getAccumulatedRotations() > 2.5) {
+        if (operatorController.getLeftY() < 0 && getAccumulatedRotations() > ElevatorConstants.MAX_POS) {
             elevatorLeft.set(0);
             elevatorRight.set(0);
-        } else if (operatorController.getLeftY() > 0 && getAccumulatedRotations() < 0) {
+        } else if (operatorController.getLeftY() > 0 && getAccumulatedRotations() < ElevatorConstants.MIN_POS) {
             elevatorLeft.set(0);
             elevatorRight.set(0);
         } else {
-            if (operatorController.getLeftY() < 0 && getAccumulatedRotations() > 2.35) {
-                elevatorLeft.set(speed*slowedPower);
-                elevatorRight.set(speed*slowedPower);
-            } else if (operatorController.getLeftY() > 0 && getAccumulatedRotations() < 0.15) {
-                elevatorLeft.set(speed*slowedPower);
-                elevatorRight.set(speed*slowedPower);
+            if (operatorController.getLeftY() < 0 && getAccumulatedRotations() > ElevatorConstants.MAX_POS - 0.15) {
+                elevatorLeft.set(speed* ElevatorConstants.SLOWED_POWER_UP);
+                elevatorRight.set(speed*ElevatorConstants.SLOWED_POWER_UP);
+            } else if (operatorController.getLeftY() > 0 && getAccumulatedRotations() < ElevatorConstants.MIN_POS + 0.15) {
+                elevatorLeft.set(speed*ElevatorConstants.SLOWED_POWER_DOWN);
+                elevatorRight.set(speed*ElevatorConstants.SLOWED_POWER_DOWN);
             } else {
                 elevatorLeft.set(speed);
                 elevatorRight.set(speed);
@@ -56,13 +55,13 @@ public class Elevator extends SubsystemBase {
         if (getAccumulatedRotations() > position) {
             setPower(-1);
             if (Math.abs(getAccumulatedRotations() - position) < 0.15) {
-                setPower(-0.05);
+                setPower(-ElevatorConstants.SLOWED_POWER_DOWN);
             }
         }
         else if (getAccumulatedRotations() < position) {
             setPower(1);
             if (Math.abs(getAccumulatedRotations() - position) < 0.15) {
-                setPower(0.05);
+                setPower(ElevatorConstants.SLOWED_POWER_UP);
             }
         }
     }
@@ -70,7 +69,7 @@ public class Elevator extends SubsystemBase {
     private double getAccumulatedRotations() {
         double currentPos = TBEncoder.getPosition();
 
-        if (Math.abs(currentPos - previousPos) < 0.8) {
+        if (Math.abs(currentPos - previousPos) < 0.5) {
             changeInPos = currentPos - previousPos;
         } else if (currentPos < previousPos) {
             changeInPos = currentPos + 1 - previousPos;
@@ -82,27 +81,6 @@ public class Elevator extends SubsystemBase {
         cumulativeRotations += changeInPos;
         return cumulativeRotations;
     }
-    
-    // private double getAccumulatedRotations() { 
-    //     double currentPos = TBEncoder.getPosition();
-    //     double currentVelocity = TBEncoder.getVelocity();
-    //     if (previousPos != -1) {
-    //         if (currentVelocity > 0.1) {
-    //             if (currentPos < previousPos) {
-    //                 cumulativeRotations++;
-    //             }
-    //         }
-    //         else if (currentVelocity < -0.1) {
-    //             if (currentPos > previousPos) {
-    //                 cumulativeRotations--;
-    //             }
-    //         }
-    //     }
-    //     previousPos = currentPos;
-    //     return currentPos + cumulativeRotations;
-    // }
-
-    
 
     private SparkMax createElevatorController(int port, boolean isInverted) {
         SparkMax controller = new SparkMax(port, MotorType.kBrushless);
@@ -125,6 +103,7 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("Elevator/Raw Position", TBEncoder.getPosition());
         SmartDashboard.putNumber("Elevator/Accumulated Position", getAccumulatedRotations());
         SmartDashboard.putNumber("Elevator/Raw Velocity", TBEncoder.getVelocity());
+        
         if (operatorController.getXButton()) {
             cumulativeRotations = 0;
         }
