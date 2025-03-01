@@ -50,7 +50,9 @@ public class Elevator extends SubsystemBase {
         }   
     }
 
-    public void setPosition(double position) {
+    public void setPosition(double position, boolean inInches) {
+        if (inInches) {position /= 11.0;}
+
         if (getAccumulatedRotations() > position) {
             setPower(-1);
             if (Math.abs(getAccumulatedRotations() - position) < 0.15) {

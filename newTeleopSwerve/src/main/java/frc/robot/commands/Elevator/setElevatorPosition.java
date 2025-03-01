@@ -10,11 +10,13 @@ public class setElevatorPosition extends Command {
     private final Elevator elevator;
     private final OI oi = OI.getInstance();
     private final double targetPosition;
+    private final boolean inInches;
 
-    public setElevatorPosition(Elevator subsystem, double targetPosition) {
+    public setElevatorPosition(Elevator subsystem, double targetPosition, boolean inInches) {
         elevator = subsystem;
         addRequirements(subsystem);
         this.targetPosition = targetPosition;
+        this.inInches = inInches;
     }
 
     @Override
@@ -23,7 +25,7 @@ public class setElevatorPosition extends Command {
 
     @Override
     public void execute() {
-        elevator.setPosition(targetPosition);
+        elevator.setPosition(targetPosition, inInches);
         SmartDashboard.putNumber("OI/Elevator Power", oi.getElevatorPower());
     }
 }
