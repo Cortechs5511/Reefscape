@@ -26,7 +26,7 @@ public class OI {
     }
 
     public double getDriverLeftY() {
-        double value = driverController.getLeftY() * 0.4;
+        double value = driverController.getLeftY();
         if (Math.abs(value) < OIConstants.DEADBAND) {
             return 0;
         }
@@ -48,7 +48,7 @@ public class OI {
     }
 
     public double getDriverLeftX() {
-        double value = driverController.getLeftX() * 0.4;
+        double value = driverController.getLeftX();
         if (Math.abs(value) < OIConstants.DEADBAND) {
             return 0;
         }
@@ -155,6 +155,10 @@ public class OI {
         return operatorController.getAButton();
     }
 
+    public boolean driverY() {
+        return driverController.getYButton();
+    }
+
     public boolean driverA() {
         return driverController.getAButton();
     }
@@ -165,6 +169,10 @@ public class OI {
 
     public boolean driverX() {
         return driverController.getXButton();
+    }
+
+    public int driverPOV() {
+        return driverController.getPOV();
     }
 
     public double getElevatorPower() {

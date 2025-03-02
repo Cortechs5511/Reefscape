@@ -102,14 +102,10 @@ public final class Constants {
     
 
     // public static final double PID_RANGE = 0.9;
-
-    public static final double MAX_TRANSLATIONAL_SPEED = 100 * 1.5;
-    public static final double MAX_ROTATIONAL_SPEED = 75 * 1.5; 
-
-
-    // Swerve Module Location Constants
-    public static final double CHASSIS_LENGTH = Units.inchesToMeters(23);
-    public static final double CHASSIS_WIDTH = Units.inchesToMeters(23);
+    // 18.7452 m 
+    public static final double CHASSIS_LENGTH = Units.inchesToMeters(21.5);
+    
+    public static final double CHASSIS_WIDTH = Units.inchesToMeters(21.5);
     public static final double[] MODULE_TRANSLATIONS = {
       CHASSIS_LENGTH / 2, CHASSIS_WIDTH / 2, 
       CHASSIS_LENGTH / 2, -CHASSIS_WIDTH / 2,
@@ -119,6 +115,22 @@ public final class Constants {
 
     public static final double MAX_AUTON_SPEED = 4.5;
     public static final double DRIVE_BASE_RADIUS = Units.inchesToMeters(Math.sqrt(CHASSIS_LENGTH*CHASSIS_LENGTH+CHASSIS_WIDTH*CHASSIS_WIDTH));
+
+    
+    public static final double TRANSLATIONAL_SPEED_CONVERSION_FACTOR = 23.0;
+    public static final double ROTATIONAL_SPEED_CONVERSION_FACTOR = 24.7;
+
+    public static final double MAX_TRANSLATIONAL_SPEED = TRANSLATIONAL_SPEED_CONVERSION_FACTOR * 5.0;
+
+    // Max rotational speed should be 3 / (Math.sqrt(2) * Units.inchesToMeters(23))
+    // public static final double MAX_ROTATIONAL_SPEED = ROTATIONAL_SPEED_CONVERSION_FACTOR * 3.0 / (Math.sqrt(2.0) * CHASSIS_LENGTH / 2); 
+    public static final double MAX_ROTATIONAL_SPEED = ROTATIONAL_SPEED_CONVERSION_FACTOR * 30;
+
+
+    // Swerve Module Location Constants
+    // each module is Math.sqrt(2) * Units.inchesToMeters(23) away from the center
+
+    
 
   }
 }
