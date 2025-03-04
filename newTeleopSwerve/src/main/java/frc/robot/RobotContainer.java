@@ -10,6 +10,7 @@ import frc.robot.commands.buttonSwerveDrive;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
+import frc.robot.subsystems.CoralSubsystem;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
@@ -19,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.swerveDrive;
 import frc.robot.commands.Elevator.setElevatorPosition;
 import frc.robot.commands.Elevator.setElevatorPower;
+import frc.robot.commands.Coral.setCoralPower;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -33,6 +35,7 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem();
   private final Elevator m_elevator = new Elevator();
+  private final CoralSubsystem m_coral = new CoralSubsystem();
 
   private final OI oi = OI.getInstance();
 
@@ -52,6 +55,7 @@ public class RobotContainer {
     // Configure the trigger bindings
     m_swerveSubsystem.setDefaultCommand(new swerveDrive(m_swerveSubsystem));
     m_elevator.setDefaultCommand(new setElevatorPower(m_elevator));
+    m_coral.setDefaultCommand(new setCoralPower(m_coral));
     configureBindings();
 
   }

@@ -30,9 +30,15 @@ public final class Constants {
   }
 
   public static class CoralConstants {
-    public static final int CORAL_FLYWHEEL_ID = 72;
-    public static final int CORAL_WRIST_ID = 71;
+    public static final int CORAL_FLYWHEEL_ID = 2;
+    public static final int CORAL_WRIST_ID = 1;
     public static final int THROUGH_BORE_ID = 8;
+
+    // MAX and MIN position of wrist
+    public static final double MAX_WRIST_POS = 0.825;
+    public static final double MIN_WRIST_POS = 0;
+    public static final double WRIST_MAX_POWER = .5;
+    
 
     public static final double VOLTAGE_COMPENSATION = 5;
     public static final int CURRENT_LIMIT = 40;
