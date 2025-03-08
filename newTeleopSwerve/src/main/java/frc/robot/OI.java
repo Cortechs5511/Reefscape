@@ -25,6 +25,10 @@ public class OI {
         return oi;
     }
 
+    public double getOperatorPOV () {
+        return operatorController.getPOV();
+    }
+
     public double getDriverLeftY() {
         double value = driverController.getLeftY();
         if (Math.abs(value) < OIConstants.DEADBAND) {
@@ -169,6 +173,14 @@ public class OI {
 
     public boolean driverX() {
         return driverController.getXButton();
+    }
+
+    public boolean operatorRightBumper () {
+        return operatorController.getRightBumperButton();
+    }
+
+    public boolean operatorLeftBumper () {
+        return operatorController.getLeftBumperButton();
     }
 
     public int driverPOV() {

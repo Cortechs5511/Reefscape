@@ -19,6 +19,9 @@ import frc.robot.Constants.ElevatorConstants;
 public class CoralSubsystem extends SubsystemBase {
     private final SparkMax flywheel = createCoralController(CoralConstants.CORAL_FLYWHEEL_ID, true);
     private final SparkMax wrist = createCoralController(CoralConstants.CORAL_WRIST_ID, false);
+
+    // dev
+    private double outputPower;
     
     private XboxController operatorController = new XboxController(1);
 
@@ -26,33 +29,29 @@ public class CoralSubsystem extends SubsystemBase {
 
     private final RelativeEncoder wristEncoder = wrist.getEncoder();
 
-    private void setCoralPower(double speed) {
-        flywheel.set(speed);
-    }    
-    
+    public void setFlywheelPower(double intakePower, double outtakePower) {
+        if (outtakePower != 0) {
+            outputPower = outtakePower * CoralConstants.FLYWHEEL_OUTTAKE_MAX_POWER;  
+            flywheel.set(outputPower);
+        } else {
+            flywheel.set(intakePower);
+            // flywheel.set(intake ? CoralConstants.FLYWHEEL_INTAKE_MAX_POWER : 0);
+        }
+    }
+
 
     public void setWristPower(double speed) {
-        if (operatorController.getLeftY() < 0 && getRawPosition() > CoralConstants.MAX_WRIST_POS) {
-            wrist.set(0);
-        } else if (operatorController.getLeftY() > 0 && getRawPosition() < CoralConstants.MIN_WRIST_POS) {
-            wrist.set(0);
-        } else {
-            wrist.set(speed);
-        }   
+        // if (operatorController.getLeftY() < 0 && getRawPosition() > CoralConstants.MAX_WRIST_POS) {
+        //     wrist.set(0);
+        // } else if (operatorController.getLeftY() > 0 && getRawPosition() < CoralConstants.MIN_WRIST_POS) {
+        //     wrist.set(0);
+        // } else {
+        wrist.set(speed);
+        // }   
     }
 
     private double getRawPosition () {
         return wristEncoder.getPosition();
-    }
-
-    public void setSpeakerAngle(double power) {
-        double rawPosition = getRawPosition(); 
-        if ((power < 0 && rawPosition > CoralConstants.minimumPosition) || (power > 0 && rawPosition < CoralConstants.maximumPosition)) {
-            setWristPower(power*0.5);
-        } else {
-            setWristPower(0);
-        }
-
     }
 
     private SparkMax createCoralController(int port, boolean isInverted) {
@@ -74,5 +73,7 @@ public class CoralSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Coral/Raw Wrist Position", TBEncoder.getPosition());
         SmartDashboard.putNumber("Coral/Raw Wrist Velocity", TBEncoder.getVelocity());
+        SmartDashboard.putNumber("Coral/output power ", outputPower);
+        
     }
 }
