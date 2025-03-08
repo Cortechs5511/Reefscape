@@ -39,17 +39,15 @@ public final class Constants {
     public static final double MIN_WRIST_POS = 0;
     public static final double WRIST_MAX_POWER = .5;
     
-    // Flywheel Power
     public static final double FLYWHEEL_INTAKE_MAX_POWER = 0.5;
     public static final double FLYWHEEL_OUTTAKE_MAX_POWER = -1.0;
 
-    // SparkMax Configuration
+
     public static final double VOLTAGE_COMPENSATION = 5;
     public static final int CURRENT_LIMIT = 40;
     public static final IdleMode IDLE_MODE = IdleMode.kBrake;
     public static final double RAMP_RATE = 0.05;
 
-    
     public static final double maximumPosition = 0.32;
     public static final double minimumPosition = 0.0;
 
@@ -135,11 +133,14 @@ public final class Constants {
 
     // Max rotational speed should be 3 / (Math.sqrt(2) * Units.inchesToMeters(23))
     // public static final double MAX_ROTATIONAL_SPEED = ROTATIONAL_SPEED_CONVERSION_FACTOR * 3.0 / (Math.sqrt(2.0) * CHASSIS_LENGTH / 2); 
-    public static final double MAX_ROTATIONAL_SPEED = ROTATIONAL_SPEED_CONVERSION_FACTOR * 30;
+    // public static final double MAX_ROTATIONAL_SPEED = ROTATIONAL_SPEED_CONVERSION_FACTOR * 30;
+    public static final double MAX_ROTATIONAL_SPEED = 75;
 
 
     // Swerve Module Location Constants
     // each module is Math.sqrt(2) * Units.inchesToMeters(23) away from the center
+
+    
 
   }
 }

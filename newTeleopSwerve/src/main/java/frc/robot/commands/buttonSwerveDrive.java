@@ -19,25 +19,25 @@ public class buttonSwerveDrive extends Command{
 
     @Override
     public void execute() {
-        if (oi.driverX()) {
-            theta = 1;
-        } else if (oi.driverB()) {
-            theta = -1;
-        } else {
-            theta = 0;
-        }
+        // if (oi.driverX()) {
+        //     theta = 1;
+        // } else if (oi.driverB()) {
+        //     theta = -1;
+        // } else {
+        //     theta = 0;
+        // }
 
-        if (oi.driverPOV() == -1) {
-            y = 0;
-            x = 0;
-        } else {
-            y = Math.cos(Math.toRadians(oi.driverPOV()));
-            x = -Math.sin(Math.toRadians(oi.driverPOV()));
-        }
+        // if (oi.driverPOV() == -1) {
+        //     y = 0;
+        //     x = 0;
+        // } else {
+        //     y = Math.cos(Math.toRadians(oi.driverPOV()));
+        //     x = -Math.sin(Math.toRadians(oi.driverPOV()));
+        // }
 
-        swerve.drive(y, x, theta, false, oi.driverY(), oi.driverA());
-        swerve.logStates();
-        SmartDashboard.putNumber("OI/Driver POV", oi.driverPOV());
+        // swerve.drive(y, x, theta, false, oi.driverY(), oi.driverA());
+        // swerve.logStates();
+        // SmartDashboard.putNumber("OI/Driver POV", oi.driverPOV());
     }
 
 }
