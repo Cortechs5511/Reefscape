@@ -6,11 +6,10 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
-import frc.robot.commands.buttonSwerveDrive;
+import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
-import frc.robot.subsystems.CoralSubsystem;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
@@ -18,10 +17,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.swerveDrive;
+import frc.robot.commands.Coral.setCoralPower;
 import frc.robot.commands.Elevator.setElevatorPosition;
 import frc.robot.commands.Elevator.setElevatorPower;
-import frc.robot.commands.Coral.setCoralPower;
-import frc.robot.commands.Coral.setFlywheelPower;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -80,11 +78,6 @@ public class RobotContainer {
     // m_operatorController.a().whileTrue(new setElevatorPosition(m_elevator, 1.0, false));
     m_operatorController.y().whileTrue(new setElevatorPosition(m_elevator, 22.0, true));
     m_operatorController.a().whileTrue(new setElevatorPosition(m_elevator, 16.0, true));
-    
-
-    // m_operatorController.rightBumper().whileTrue(new setFlywheelPower(m_coral, true)).whileFalse(new setFlywheelPower(m_coral, true));
-    // Trigger flywheelTrigger = new Trigger(() -> m_operatorController.getRightTriggerAxis() > 0.1);
-    // flywheelTrigger.whileTrue(new setFlywheelPower(m_coral, false)).whileFalse(new setFlywheelPower(m_coral, false));
   }
 
   /**

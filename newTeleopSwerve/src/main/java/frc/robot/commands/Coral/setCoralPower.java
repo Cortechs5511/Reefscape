@@ -23,15 +23,15 @@ public class setCoralPower extends Command {
     @Override
     public void execute() {
         coral.setWristPower(oi.getOperatorRightY() * CoralConstants.WRIST_MAX_POWER);
-        if (oi.getOperatorPOV() == -1) {
+        if (oi.operatorPOV() == -1) {
             power = 0; 
-        } else if (oi.getOperatorPOV() == 0) {
+        } else if (oi.operatorPOV() == 0) {
             power = 0.2;
-        } else if (oi.getOperatorPOV() == 90) {
+        } else if (oi.operatorPOV() == 90) {
             power = .4;
-        }  else if (oi.getOperatorPOV() == 180) {
+        }  else if (oi.operatorPOV() == 180) {
             power = .6;
-        } else if (oi.getOperatorPOV() == 270) {
+        } else if (oi.operatorPOV() == 270) {
             power = .8;
         } else {
             power = 0;

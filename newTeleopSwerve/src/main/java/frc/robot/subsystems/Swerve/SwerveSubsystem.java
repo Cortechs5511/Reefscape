@@ -117,7 +117,6 @@ public class SwerveSubsystem extends SubsystemBase {
         odometry.update(gyro.getRotation2d(), getPositions());
         field.setRobotPose(getPose());
         // transfering the controller inputs into SwerveModuleState
-
         ChassisSpeeds controllerSpeeds = new ChassisSpeeds(
             SwerveConstants.MAX_TRANSLATIONAL_SPEED * -driveController.getLeftY(), 
             SwerveConstants.MAX_TRANSLATIONAL_SPEED * -driveController.getLeftX(), 
@@ -136,47 +135,7 @@ public class SwerveSubsystem extends SubsystemBase {
             controllerStates[3].angle.getRadians(),
             controllerStates[3].speedMetersPerSecond,
         };
-
-        SmartDashboard.putNumberArray("Controller Joystick State", controllerStatesAsDoubles);
-
-        double y, x, theta;
-        
-        // if (driveController.getPOV() == -1) {
-        //     y = 0;
-        //     x = 0;
-        // } else {
-        //     y = Math.cos(Math.toRadians(driveController.getPOV()));
-        //     x = -Math.sin(Math.toRadians(driveController.getPOV()));
-        // }
-
-        // if (driveController.getXButton()) {
-        //     theta = 1;
-        // } else if (driveController.getBButton()) {
-        //     theta = -1;
-        // } else {
-        //     theta = 0;
-        // }
-
-        // ChassisSpeeds controllerButtonSpeeds = new ChassisSpeeds(
-        //     SwerveConstants.MAX_TRANSLATIONAL_SPEED * y, 
-        //     SwerveConstants.MAX_TRANSLATIONAL_SPEED * x, 
-        //     SwerveConstants.MAX_ROTATIONAL_SPEED * theta 
-        // );
-        // SwerveModuleState[] controllerButtonStates = kinematics.toSwerveModuleStates(controllerButtonSpeeds);
-        
-        // // Logging the swerve Module state data onto the smart module
-        // double[] controllerButtonStatesAsDoubles = {
-        //     controllerButtonStates[0].angle.getRadians(),
-        //     controllerButtonStates[0].speedMetersPerSecond,
-        //     controllerButtonStates[1].angle.getRadians(),
-        //     controllerButtonStates[1].speedMetersPerSecond,
-        //     controllerButtonStates[2].angle.getRadians(),
-        //     controllerButtonStates[2].speedMetersPerSecond,
-        //     controllerButtonStates[3].angle.getRadians(),
-        //     controllerButtonStates[3].speedMetersPerSecond,
-        // };
-
-        // SmartDashboard.putNumberArray("Controller Button State", controllerButtonStatesAsDoubles);
+        SmartDashboard.putNumberArray("Controller State", controllerStatesAsDoubles);
 
         logStates();
     }
@@ -278,13 +237,12 @@ public class SwerveSubsystem extends SubsystemBase {
         };
         
         SmartDashboard.putNumberArray("Module State", loggingState);
-        SmartDashboard.putNumber("Gyro/Yaw Radians", gyro.getRotation2d().getRadians());
+        SmartDashboard.putNumber("Gyro Radians", gyro.getRotation2d().getRadians());
 
         SmartDashboard.putNumber("Swerve/FL Velocity", modules[0].getVelocity());
         SmartDashboard.putNumber("Swerve/FR Velocity", modules[1].getVelocity());
         SmartDashboard.putNumber("Swerve/BL Velocity", modules[2].getVelocity());
         SmartDashboard.putNumber("Swerve/BR Velocity", modules[3].getVelocity());
-        SmartDashboard.putNumber("Chassis Angular Speed", getSpeeds().omegaRadiansPerSecond);
     }
     
 }

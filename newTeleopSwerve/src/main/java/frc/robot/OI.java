@@ -25,12 +25,8 @@ public class OI {
         return oi;
     }
 
-    public double getOperatorPOV () {
-        return operatorController.getPOV();
-    }
-
     public double getDriverLeftY() {
-        double value = driverController.getLeftY();
+        double value = driverController.getLeftY() * 0.4;
         if (Math.abs(value) < OIConstants.DEADBAND) {
             return 0;
         }
@@ -52,7 +48,7 @@ public class OI {
     }
 
     public double getDriverLeftX() {
-        double value = driverController.getLeftX();
+        double value = driverController.getLeftX() * 0.4;
         if (Math.abs(value) < OIConstants.DEADBAND) {
             return 0;
         }
@@ -86,7 +82,7 @@ public class OI {
         if (Math.abs(value) < OIConstants.DEADBAND) {
             return 0;
         }
-        return value;
+        return -value;
     }
 
     public double getDriverRightX() {
@@ -143,6 +139,14 @@ public class OI {
         return value;
     }
 
+    public double operatorPOV() {
+        return operatorController.getPOV();
+    }
+
+    public double driverPOV() {
+        return driverController.getPOV();
+    }
+
     public boolean operatorY() {
         return operatorController.getYButton();
     }
@@ -159,10 +163,6 @@ public class OI {
         return operatorController.getAButton();
     }
 
-    public boolean driverY() {
-        return driverController.getYButton();
-    }
-
     public boolean driverA() {
         return driverController.getAButton();
     }
@@ -173,18 +173,6 @@ public class OI {
 
     public boolean driverX() {
         return driverController.getXButton();
-    }
-
-    public boolean operatorRightBumper () {
-        return operatorController.getRightBumperButton();
-    }
-
-    public boolean operatorLeftBumper () {
-        return operatorController.getLeftBumperButton();
-    }
-
-    public int driverPOV() {
-        return driverController.getPOV();
     }
 
     public double getElevatorPower() {

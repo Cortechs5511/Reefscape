@@ -3,10 +3,8 @@ package frc.robot.subsystems.Swerve;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Gyro extends SubsystemBase{
+public class Gyro {
     private Pigeon2 pigeon;
 
      public Gyro() {
@@ -28,11 +26,6 @@ public class Gyro extends SubsystemBase{
      public void resetGyro() {
          // pigeon.reset();
          pigeon.setYaw(0);
-     }
-
-     @Override
-     public void periodic() {
-        SmartDashboard.putNumber("Gyro/Yaw Radians per Sec", Math.toRadians(pigeon.getAngularVelocityZWorld().getValueAsDouble()));
      }
 
  }
