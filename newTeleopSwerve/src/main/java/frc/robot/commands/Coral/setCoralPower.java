@@ -22,7 +22,10 @@ public class setCoralPower extends Command {
 
     @Override
     public void execute() {
+
         coral.setWristPower(oi.getOperatorRightY() * CoralConstants.WRIST_MAX_POWER);
+
+
         if (oi.operatorPOV() == -1) {
             power = 0; 
         } else if (oi.operatorPOV() == 0) {

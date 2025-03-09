@@ -35,9 +35,9 @@ public final class Constants {
     public static final int THROUGH_BORE_ID = 8;
 
     // MAX and MIN position of wrist
-    public static final double MAX_WRIST_POS = 0.825;
-    public static final double MIN_WRIST_POS = 0;
-    public static final double WRIST_MAX_POWER = .5;
+    public static final double MAX_WRIST_POS = 0.355;
+    public static final double MIN_WRIST_POS = 0.89;
+    public static final double WRIST_MAX_POWER = 0.3;
     
     public static final double FLYWHEEL_INTAKE_MAX_POWER = 0.5;
     public static final double FLYWHEEL_OUTTAKE_MAX_POWER = -1.0;

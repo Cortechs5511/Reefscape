@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.ctre.phoenix6.hardware.core.CoreTalonFX;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -14,11 +13,10 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import frc.robot.Constants.CoralConstants;
-import frc.robot.Constants.ElevatorConstants;
 
 public class CoralSubsystem extends SubsystemBase {
     private final SparkMax flywheel = createCoralController(CoralConstants.CORAL_FLYWHEEL_ID, true);
-    private final SparkMax wrist = createCoralController(CoralConstants.CORAL_WRIST_ID, false);
+    private final SparkMax wrist = createCoralController(CoralConstants.CORAL_WRIST_ID, true);
 
     // dev
     private double outputPower;
@@ -41,18 +39,24 @@ public class CoralSubsystem extends SubsystemBase {
 
 
     public void setWristPower(double speed) {
-        // if (operatorController.getLeftY() < 0 && getRawPosition() > CoralConstants.MAX_WRIST_POS) {
-        //     wrist.set(0);
-        // } else if (operatorController.getLeftY() > 0 && getRawPosition() < CoralConstants.MIN_WRIST_POS) {
-        //     wrist.set(0);
-        // } else {
-        wrist.set(speed);
-        // }   
+        if (speed > 0 && TBEncoder.getPosition() < 0.37) {
+            wrist.set(0);
+        } else if (speed < 0 && TBEncoder.getPosition() > 0.89) {
+            wrist.set(0);
+        } else {
+            wrist.set(speed);
+        }   
+        SmartDashboard.putNumber("Coral/input speed", speed);
     }
 
-    private double getRawPosition () {
-        return wristEncoder.getPosition();
+    public void setWristPos(double pos) {
+        if (TBEncoder.getPosition() < pos) {
+            setWristPower(-0.1);
+        } else {
+            setWristPower(0.1);
+        }
     }
+
 
     private SparkMax createCoralController(int port, boolean isInverted) {
         SparkMax controller = new SparkMax(port, MotorType.kBrushless);

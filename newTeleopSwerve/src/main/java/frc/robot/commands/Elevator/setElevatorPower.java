@@ -21,7 +21,7 @@ public class setElevatorPower extends Command {
 
     @Override
     public void execute() {
-        elevator.setPower(oi.getElevatorPower() * ElevatorConstants.MAX_POWER);
+        elevator.setPower(oi.getElevatorPower() * ElevatorConstants.MAX_POWER + 0.025);
         SmartDashboard.putNumber("OI/Elevator Power", oi.getElevatorPower());
     }
 }
