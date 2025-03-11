@@ -57,7 +57,6 @@ public class RobotContainer {
     m_elevator.setDefaultCommand(new setElevatorPower(m_elevator));
     m_coral.setDefaultCommand(new setCoralPower(m_coral));
     configureBindings();
-
   }
 
   /**
@@ -74,15 +73,22 @@ public class RobotContainer {
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release. 
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    // m_operatorController.y().whileTrue(new setElevatorPosition(m_elevator, 2.0, false));
-    // m_operatorController.a().whileTrue(new setElevatorPosition(m_elevator, 1.0, false));
-    // m_operatorController.y().whileTrue(new setElevatorPosition(m_elevator, 22.0, true));
-    // m_operatorController.a().whileTrue(new setElevatorPosition(m_elevator, 16.0, true));
-    m_operatorController.a().whileTrue(new setWristPosition(m_coral, 0.679)).whileTrue(new setElevatorPosition(m_elevator, 1.8, false));
-  }
+    
+    // driving position (bottom) 
+    m_operatorController.a().whileTrue(new setWristPosition(m_coral, 0.405)).whileTrue(new setElevatorPosition(m_elevator, 0, false));
+    // l2
+    m_operatorController.x().whileTrue(new setWristPosition(m_coral, 0.595)).whileTrue(new setElevatorPosition(m_elevator, 0, false));
+    // l3
+    m_operatorController.b().whileTrue(new setWristPosition(m_coral, 0.625)).whileTrue(new setElevatorPosition(m_elevator, 1.8, false));
+    // l4 wrist
+    m_operatorController.y().whileTrue(new setWristPosition(m_coral, 0.55));
+    // l4 elevator
+    m_operatorController.leftStick().whileTrue(new setElevatorPosition(m_elevator, 3.55, false));
+    // intake
+    m_operatorController.leftBumper().whileTrue(new setWristPosition(m_coral, 0.55)).whileTrue(new setElevatorPosition(m_elevator, 0, false));
+}
 
-  /**
+  /**\[]\[]
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous

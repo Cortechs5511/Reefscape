@@ -51,9 +51,17 @@ public class CoralSubsystem extends SubsystemBase {
 
     public void setWristPos(double pos) {
         if (TBEncoder.getPosition() < pos) {
-            setWristPower(-0.1);
+            if (Math.abs(pos - TBEncoder.getPosition()) < 0.025) {
+                setWristPower(-.05);
+            } else {
+                setWristPower(-.5);
+            }
         } else {
-            setWristPower(0.1);
+            if (Math.abs(pos - TBEncoder.getPosition()) < 0.025) {
+                setWristPower(.05);
+            } else{ 
+                setWristPower(0.5);
+            }
         }
     }
 

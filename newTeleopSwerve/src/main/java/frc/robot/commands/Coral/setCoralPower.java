@@ -25,18 +25,9 @@ public class setCoralPower extends Command {
 
         coral.setWristPower(oi.getOperatorRightY() * CoralConstants.WRIST_MAX_POWER);
 
-
-        if (oi.operatorPOV() == -1) {
-            power = 0; 
-        } else if (oi.operatorPOV() == 0) {
-            power = 0.2;
-        } else if (oi.operatorPOV() == 90) {
-            power = .4;
-        }  else if (oi.operatorPOV() == 180) {
-            power = .6;
-        } else if (oi.operatorPOV() == 270) {
+        if (oi.getOperatorRightBumper()) {
             power = .8;
-        } else {
+        } else { 
             power = 0;
         }
         coral.setFlywheelPower(power, oi.operatorRightTrigger());

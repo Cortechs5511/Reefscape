@@ -76,7 +76,7 @@ public final class Constants {
 
 
 
-    public static final double MAX_POS = 2.5;
+    public static final double MAX_POS = 3.54;
     // position of intake when down (intaking)
     public static final double MIN_POS = 0;
 
