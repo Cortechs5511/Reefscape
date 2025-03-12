@@ -30,6 +30,7 @@ public class SwerveSubsystem extends SubsystemBase {
     private SwerveDriveKinematics kinematics;
     private final PIDController[] drivePIDControllers;
     private final ProfiledPIDController[] turnPIDControllers;
+    // private final PIDController[] turnPIDControllers;
     // Properties for Field oriented driving
     private Gyro gyro;
     private SwerveDriveOdometry odometry;
@@ -61,11 +62,18 @@ public class SwerveSubsystem extends SubsystemBase {
             new PIDController(SwerveConstants.DRIVE_PID_VALUES[0], SwerveConstants.DRIVE_PID_VALUES[1], SwerveConstants.DRIVE_PID_VALUES[2])
         };
         turnPIDControllers = new ProfiledPIDController[] {
-            new ProfiledPIDController(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION)),
-            new ProfiledPIDController(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION)),
-            new ProfiledPIDController(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION)),
-            new ProfiledPIDController(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION))  
+             new ProfiledPIDController(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION)),
+             new ProfiledPIDController(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION)),
+             new ProfiledPIDController(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION)),
+             new ProfiledPIDController(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION))  
         };
+
+        // turnPIDControllers = new PIDController[] {
+        //     new PIDController(SwerveConstants.DRIVE_PID_VALUES[0], SwerveConstants.DRIVE_PID_VALUES[1], SwerveConstants.DRIVE_PID_VALUES[2]),
+        //     new PIDController(SwerveConstants.DRIVE_PID_VALUES[0], SwerveConstants.DRIVE_PID_VALUES[1], SwerveConstants.DRIVE_PID_VALUES[2]),
+        //     new PIDController(SwerveConstants.DRIVE_PID_VALUES[0], SwerveConstants.DRIVE_PID_VALUES[1], SwerveConstants.DRIVE_PID_VALUES[2]),
+        //     new PIDController(SwerveConstants.DRIVE_PID_VALUES[0], SwerveConstants.DRIVE_PID_VALUES[1], SwerveConstants.DRIVE_PID_VALUES[2])
+        // };
 
         for (ProfiledPIDController p : turnPIDControllers) {
             p.enableContinuousInput(0, 2 * Math.PI);
@@ -137,13 +145,55 @@ public class SwerveSubsystem extends SubsystemBase {
             System.out.println(currentTx);
         }
 
+        double strafeSpeed = 0.75 * -currentTx;
+
+        if (Math.abs(strafeSpeed) <= 2) {
+            if (strafeSpeed > 0) {
+                strafeSpeed = 2;
+            } else {
+                strafeSpeed = -2; 
+            }
+        }
         ChassisSpeeds newDesiredSpeeds = new ChassisSpeeds(
-        0, .5 * (-currentTx), 0
-    );
+            0, strafeSpeed, 0
+        );
         driveRobotRelative(newDesiredSpeeds);
     }
 
+    public void limelightAlignDrive() {
+        double speed = 0;
+        double currentTy = 0; 
+        double limelightMountAngleDegrees = 0.0; 
+        double limelightLensHeightInches = 11.0 - 2.5;
+        double goalHeightInches = 12.125; 
 
+        RawFiducial[] limelightData  = getLimelightData();
+        for (int i = 0; i < limelightData.length; i++) {
+            RawFiducial currentEntry = limelightData[i];
+            currentTy = currentEntry.tync;
+        }
+
+        double angleToGoalDegrees = limelightMountAngleDegrees + currentTy;
+        double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
+
+        double distanceFromLimelightToGoalInches = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
+
+        System.out.println(distanceFromLimelightToGoalInches);
+
+        if (distanceFromLimelightToGoalInches > 19.5) {
+            speed = 1;
+        } else if (distanceFromLimelightToGoalInches < 20.5) {
+            speed = -1;
+        } else {
+            speed = 0;
+        }
+        
+        ChassisSpeeds newDesiredSpeeds = new ChassisSpeeds(
+            speed, 0, 0
+        );
+
+        driveRobotRelative(newDesiredSpeeds);
+    }
 
     @Override 
     public void periodic () {
@@ -184,6 +234,7 @@ public class SwerveSubsystem extends SubsystemBase {
         if (resetPID) {
             for (int i = 0; i < 4; i++) {
                 turnPIDControllers[i].reset(modules[i].getAngle().getRadians(), modules[i].getVelocity());
+                // turnPIDControllers[i].reset();
             }
         }
         // reset gyro button
