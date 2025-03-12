@@ -6,12 +6,19 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
+import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.swerveDrive;
+import frc.robot.commands.Coral.setCoralPower;
+import frc.robot.commands.Coral.setWristPosition;
 import frc.robot.commands.Elevator.setElevatorPosition;
 import frc.robot.commands.Elevator.setElevatorPower;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -28,8 +35,11 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem();
   private final Elevator m_elevator = new Elevator();
+  private final CoralSubsystem m_coral = new CoralSubsystem();
 
   private final OI oi = OI.getInstance();
+
+  private final SendableChooser<Command> autoChooser;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -40,9 +50,12 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto chooser", autoChooser);
     // Configure the trigger bindings
     m_swerveSubsystem.setDefaultCommand(new swerveDrive(m_swerveSubsystem));
     m_elevator.setDefaultCommand(new setElevatorPower(m_elevator));
+    m_coral.setDefaultCommand(new setCoralPower(m_coral));
     configureBindings();
   }
 
@@ -57,25 +70,31 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release. 
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    // m_operatorController.y().whileTrue(new setElevatorPosition(m_elevator, 2.0, false));
-    // m_operatorController.a().whileTrue(new setElevatorPosition(m_elevator, 1.0, false));
-    m_operatorController.y().whileTrue(new setElevatorPosition(m_elevator, 22.0, true));
-    m_operatorController.a().whileTrue(new setElevatorPosition(m_elevator, 16.0, true));
-  }
+    
+    // driving position (bottom) 
+    m_operatorController.a().whileTrue(new setWristPosition(m_coral, 0.405)).whileTrue(new setElevatorPosition(m_elevator, 0, false));
+    // l2
+    m_operatorController.x().whileTrue(new setWristPosition(m_coral, 0.595)).whileTrue(new setElevatorPosition(m_elevator, 0, false));
+    // l3
+    m_operatorController.b().whileTrue(new setWristPosition(m_coral, 0.625)).whileTrue(new setElevatorPosition(m_elevator, 1.8, false));
+    // l4 wrist
+    m_operatorController.y().whileTrue(new setWristPosition(m_coral, 0.55));
+    // l4 elevator
+    m_operatorController.leftStick().whileTrue(new setElevatorPosition(m_elevator, 3.55, false));
+    // intake
+    m_operatorController.leftBumper().whileTrue(new setWristPosition(m_coral, 0.55)).whileTrue(new setElevatorPosition(m_elevator, 0, false));
+}
 
-  /**
+  /**\[]\[]
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+    return autoChooser.getSelected();
   }
+
 }

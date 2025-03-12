@@ -30,10 +30,17 @@ public final class Constants {
   }
 
   public static class CoralConstants {
-    public static final int CORAL_L_ID = 60;
-    public static final int CORAL_R_ID = 61;
-    public static final int CORAL_W_ID = 61;
+    public static final int CORAL_FLYWHEEL_ID = 2;
+    public static final int CORAL_WRIST_ID = 1;
     public static final int THROUGH_BORE_ID = 8;
+
+    // MAX and MIN position of wrist
+    public static final double MAX_WRIST_POS = 0.355;
+    public static final double MIN_WRIST_POS = 0.89;
+    public static final double WRIST_MAX_POWER = 0.3;
+    
+    public static final double FLYWHEEL_INTAKE_MAX_POWER = 0.5;
+    public static final double FLYWHEEL_OUTTAKE_MAX_POWER = -1.0;
 
     public static final double VOLTAGE_COMPENSATION = 5;
     public static final int CURRENT_LIMIT = 40;
@@ -69,7 +76,7 @@ public final class Constants {
 
 
 
-    public static final double MAX_POS = 2.5;
+    public static final double MAX_POS = 3.54;
     // position of intake when down (intaking)
     public static final double MIN_POS = 0;
 
@@ -93,31 +100,20 @@ public final class Constants {
     public static final int[] IDS = {12, 11, 1, 22, 21, 2, 32, 31, 3, 42, 41, 4};
 
     // PID Values
-    public static final double[] FL_DRIVE_PID_VALUES = {0.015, 0.0, 0.0};
-    public static final double[] FL_TURN_PID_VALUES = {.7, 0.0, 0.0};
-
-    public static final double[] FR_DRIVE_PID_VALUES = {0.015, 0.0, 0.0};
-    public static final double[] FR_TURN_PID_VALUES = {.7, 0.0, 0.0};
     
-    public static final double[] BL_DRIVE_PID_VALUES = {0.015, 0.0, 0.0};
-    public static final double[] BL_TURN_PID_VALUES = {.7, 0.0, 0.0};
     
-    public static final double[] BR_DRIVE_PID_VALUES = {0.015, 0.0, 0.0};
-    public static final double[] BR_TURN_PID_VALUES = {.7, 0.0, 0.0};
+    public static final double[] DRIVE_PID_VALUES = {0.015, 0.0, 0.0};
+    public static final double[] TURN_PID_VALUES = {.7, 0.0, 0.0};
 
     public static final double ANGLE_MAX_VELOCITY = 7.0;
     public static final double ANGLE_MAX_ACCELERATION = 30.0;
     
 
     // public static final double PID_RANGE = 0.9;
-
-    public static final double MAX_TRANSLATIONAL_SPEED = 100 * 1.5;
-    public static final double MAX_ROTATIONAL_SPEED = 75 * 1.5; 
-
-
-    // Swerve Module Location Constants
-    public static final double CHASSIS_LENGTH = Units.inchesToMeters(23);
-    public static final double CHASSIS_WIDTH = Units.inchesToMeters(23);
+    // 18.7452 m 
+    public static final double CHASSIS_LENGTH = Units.inchesToMeters(21.5);
+    
+    public static final double CHASSIS_WIDTH = Units.inchesToMeters(21.5);
     public static final double[] MODULE_TRANSLATIONS = {
       CHASSIS_LENGTH / 2, CHASSIS_WIDTH / 2, 
       CHASSIS_LENGTH / 2, -CHASSIS_WIDTH / 2,
@@ -127,6 +123,23 @@ public final class Constants {
 
     public static final double MAX_AUTON_SPEED = 4.5;
     public static final double DRIVE_BASE_RADIUS = Units.inchesToMeters(Math.sqrt(CHASSIS_LENGTH*CHASSIS_LENGTH+CHASSIS_WIDTH*CHASSIS_WIDTH));
+
+    
+    public static final double TRANSLATIONAL_SPEED_CONVERSION_FACTOR = 23.0;
+    public static final double ROTATIONAL_SPEED_CONVERSION_FACTOR = 24.7;
+
+    public static final double MAX_TRANSLATIONAL_SPEED = TRANSLATIONAL_SPEED_CONVERSION_FACTOR * 5.0;
+
+    // Max rotational speed should be 3 / (Math.sqrt(2) * Units.inchesToMeters(23))
+    // public static final double MAX_ROTATIONAL_SPEED = ROTATIONAL_SPEED_CONVERSION_FACTOR * 3.0 / (Math.sqrt(2.0) * CHASSIS_LENGTH / 2); 
+    // public static final double MAX_ROTATIONAL_SPEED = ROTATIONAL_SPEED_CONVERSION_FACTOR * 30;
+    public static final double MAX_ROTATIONAL_SPEED = 75;
+
+
+    // Swerve Module Location Constants
+    // each module is Math.sqrt(2) * Units.inchesToMeters(23) away from the center
+
+    
 
   }
 }

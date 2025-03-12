@@ -1,21 +1,19 @@
-package frc.robot.commands.Elevator;
+package frc.robot.commands.Coral;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.OI;
-import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.CoralSubsystem;
 
-public class setElevatorPosition extends Command {
-    private final Elevator elevator;
+public class setWristPosition extends Command {
+    private final CoralSubsystem coral;
     private final OI oi = OI.getInstance();
     private final double targetPosition;
-    private final boolean inInches;
 
-    public setElevatorPosition(Elevator subsystem, double targetPosition, boolean inInches) {
-        elevator = subsystem;
+    public setWristPosition(CoralSubsystem subsystem, double targetPosition) {
+        coral = subsystem;
         addRequirements(subsystem);
         this.targetPosition = targetPosition;
-        this.inInches = inInches;
     }
 
     @Override
@@ -24,7 +22,7 @@ public class setElevatorPosition extends Command {
 
     @Override
     public void execute() {
-        elevator.setPosition(targetPosition, inInches);
+        coral.setWristPos(targetPosition);
         SmartDashboard.putNumber("OI/Elevator Power", oi.getElevatorPower());
     }
 }

@@ -1,17 +1,16 @@
 package frc.robot.subsystems;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-//import edu.wpi.first.math.controller.PIDController;
 
 import frc.robot.Constants.ElevatorConstants;
 
@@ -22,6 +21,8 @@ public class Elevator extends SubsystemBase {
     private XboxController operatorController = new XboxController(1);
 
     private final SparkAbsoluteEncoder TBEncoder = elevatorRight.getAbsoluteEncoder();
+
+    private final RelativeEncoder relEncoder = elevatorLeft.getEncoder();
 
     private double cumulativeRotations = 0;
     private double previousPos = TBEncoder.getPosition();
@@ -103,12 +104,13 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("Elevator/Raw Position", TBEncoder.getPosition());
         SmartDashboard.putNumber("Elevator/Accumulated Position", getAccumulatedRotations());
         SmartDashboard.putNumber("Elevator/Raw Velocity", TBEncoder.getVelocity());
+        SmartDashboard.putNumber("Elevator/Relative Velocity", relEncoder.getVelocity());
         
-        if (operatorController.getXButton()) {
+        if (operatorController.getPOV() == 0) {
             cumulativeRotations = 0;
         }
-        if (operatorController.getBButton()) {
-            cumulativeRotations = 2.5;
+        if (operatorController.getPOV() == 90) { 
+            cumulativeRotations = 2.5; 
         }
     }
 }
