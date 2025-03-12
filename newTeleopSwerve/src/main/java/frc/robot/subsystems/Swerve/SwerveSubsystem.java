@@ -19,7 +19,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveConstants;
-
+import frc.robot.LimelightHelpers;
+import frc.robot.LimelightHelpers.RawFiducial;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
@@ -111,6 +112,38 @@ public class SwerveSubsystem extends SubsystemBase {
         e.printStackTrace();
         }
     }
+
+    // limelight stuff
+    private RawFiducial[] getLimelightData() {
+        RawFiducial[] fiducials = LimelightHelpers.getRawFiducials("limelight-sublime");
+        for (RawFiducial fiducial : fiducials) {
+            int id = fiducial.id;                    // Tag ID
+            double txnc = fiducial.txnc;             // X offset (no crosshair)
+            double tync = fiducial.tync;             // Y offset (no crosshair)
+            double ta = fiducial.ta;                 // Target area
+            double distToCamera = fiducial.distToCamera;  // Distance to camera
+            double distToRobot = fiducial.distToRobot;    // Distance to robot
+            double ambiguity = fiducial.ambiguity;   // Tag pose ambiguity
+    };
+    return fiducials;
+    }
+
+    public void limelightAlignStrafe() {
+        double currentTx = 0 ; 
+        RawFiducial[] limelightData  = getLimelightData();
+        for (int i = 0; i < limelightData.length; i++) {
+            RawFiducial currentEntry = limelightData[i];
+            currentTx = currentEntry.txnc;
+            System.out.println(currentTx);
+        }
+
+        ChassisSpeeds newDesiredSpeeds = new ChassisSpeeds(
+        0, .5 * (-currentTx), 0
+    );
+        driveRobotRelative(newDesiredSpeeds);
+    }
+
+
 
     @Override 
     public void periodic () {
