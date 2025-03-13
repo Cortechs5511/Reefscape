@@ -16,7 +16,7 @@ public class alignLimelight extends Command{
     @Override
     public void execute() {
         swerve.limelightAlignStrafe();
-        // swerve.drive(0.5, 0, 0, false);
+        swerve.limelightAlignDrive();
         swerve.logStates();
     }
 }

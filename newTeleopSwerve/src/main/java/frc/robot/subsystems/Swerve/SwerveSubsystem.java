@@ -147,12 +147,17 @@ public class SwerveSubsystem extends SubsystemBase {
 
         double strafeSpeed = 0.75 * -currentTx;
 
+
         if (Math.abs(strafeSpeed) <= 2) {
             if (strafeSpeed > 0) {
                 strafeSpeed = 2;
             } else {
                 strafeSpeed = -2; 
             }
+        }
+
+        if (Math.abs(currentTx) < 0.3) {
+            strafeSpeed = 0;
         }
         ChassisSpeeds newDesiredSpeeds = new ChassisSpeeds(
             0, strafeSpeed, 0
