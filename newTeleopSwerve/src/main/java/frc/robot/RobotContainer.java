@@ -9,7 +9,7 @@ import frc.robot.commands.Autos;
 
 import frc.robot.commands.alignLimelight;
 import frc.robot.commands.alignLimelightDist;
-
+import frc.robot.commands.setSwerveAngles;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -79,6 +79,8 @@ public class RobotContainer {
     // cancelling on release. 
     
     m_driverController.a().whileTrue(new alignLimelight(m_swerveSubsystem));
+    m_driverController.start().whileTrue(new setSwerveAngles(m_swerveSubsystem, 0));
+    m_driverController.back().whileTrue(new setSwerveAngles(m_swerveSubsystem, 90));
 
     // m_driverController.b().whileTrue(new alignLimelightDist(m_swerveSubsystem));
 

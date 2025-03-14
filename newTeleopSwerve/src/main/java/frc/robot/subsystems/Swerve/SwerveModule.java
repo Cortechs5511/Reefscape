@@ -77,6 +77,27 @@ public class SwerveModule {
         driveMotor.set(driveOutput);
     }
 
+    public void setAngle(double target, ProfiledPIDController turnPID) {
+        turnPID.setP(turnPID.getP()*0.9);
+        Rotation2d targetAngle = new Rotation2d(target * Math.PI / 180.0);
+        Rotation2d currentAngle = getAngle();
+        var delta = targetAngle.minus(currentAngle);
+       
+        // optimize
+        if (Math.abs(delta.getDegrees()) > 90.0) {
+            targetAngle = targetAngle.rotateBy(Rotation2d.kPi);
+        }
+        
+        double turnOutput = turnPID.calculate(currentAngle.getRadians(), targetAngle.getRadians());
+
+        turnMotor.set(turnOutput);
+    }
+    // var delta = angle.minus(currentAngle);
+    // if (Math.abs(delta.getDegrees()) > 90.0) {
+    //   speedMetersPerSecond *= -1;
+    //   angle = angle.rotateBy(Rotation2d.kPi);
+    // }
+
     public double getVelocity() {
         return driveEncoder.getVelocity();
     }

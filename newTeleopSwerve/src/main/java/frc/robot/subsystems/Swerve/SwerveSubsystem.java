@@ -335,6 +335,13 @@ public class SwerveSubsystem extends SubsystemBase {
     //    }
     }
 
+    public void setAngles(double targetAngle) {
+        modules[0].setAngle(targetAngle, turnPIDControllers[0]);
+        modules[1].setAngle(targetAngle, turnPIDControllers[1]);
+        modules[2].setAngle(targetAngle, turnPIDControllers[2]);
+        modules[3].setAngle(targetAngle, turnPIDControllers[3]);
+    }
+
     public SwerveModuleState[] getStates() {
         SwerveModuleState[] currentStates = {
             modules[0].getState(), 

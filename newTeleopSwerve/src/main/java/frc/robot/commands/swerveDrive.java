@@ -40,6 +40,10 @@ public class swerveDrive extends Command{
             if (oi.getDriverLeftBumper()) {
                 yValue = .05;
             }
+        // } else if (oi.driverStart()) {
+        //     xValue = 0.001;
+        // } else if (oi.driverBack()) {
+        //     yValue = 0.001;
         } else { 
             xValue = -oi.getDriverLeftY();
             yValue = -oi.getDriverLeftX();

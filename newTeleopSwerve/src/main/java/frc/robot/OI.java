@@ -191,6 +191,14 @@ public class OI {
         return driverController.getYButton();
     }
 
+    public boolean driverStart() {
+        return driverController.getStartButton();
+    }
+
+    public boolean driverBack() {
+        return driverController.getBackButton();
+    }
+
     public double getElevatorPower() {
         return getOperatorLeftY();
 
