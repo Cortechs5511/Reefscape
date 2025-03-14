@@ -6,6 +6,10 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
+
+import frc.robot.commands.alignLimelight;
+import frc.robot.commands.alignLimelightDist;
+
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -74,6 +78,10 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release. 
     
+    m_driverController.a().whileTrue(new alignLimelight(m_swerveSubsystem));
+
+    // m_driverController.b().whileTrue(new alignLimelightDist(m_swerveSubsystem));
+
     // driving position (bottom) 
     m_operatorController.a().whileTrue(new setWristPosition(m_coral, 0.405)).whileTrue(new setElevatorPosition(m_elevator, 0, false));
     // l2

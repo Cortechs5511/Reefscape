@@ -19,7 +19,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveConstants;
-
+import frc.robot.LimelightHelpers;
+import frc.robot.LimelightHelpers.RawFiducial;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
@@ -29,6 +30,7 @@ public class SwerveSubsystem extends SubsystemBase {
     private SwerveDriveKinematics kinematics;
     private final PIDController[] drivePIDControllers;
     private final ProfiledPIDController[] turnPIDControllers;
+    // private final PIDController[] turnPIDControllers;
     // Properties for Field oriented driving
     private Gyro gyro;
     private SwerveDriveOdometry odometry;
@@ -60,11 +62,18 @@ public class SwerveSubsystem extends SubsystemBase {
             new PIDController(SwerveConstants.DRIVE_PID_VALUES[0], SwerveConstants.DRIVE_PID_VALUES[1], SwerveConstants.DRIVE_PID_VALUES[2])
         };
         turnPIDControllers = new ProfiledPIDController[] {
-            new ProfiledPIDController(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION)),
-            new ProfiledPIDController(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION)),
-            new ProfiledPIDController(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION)),
-            new ProfiledPIDController(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION))  
+             new ProfiledPIDController(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION)),
+             new ProfiledPIDController(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION)),
+             new ProfiledPIDController(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION)),
+             new ProfiledPIDController(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION))  
         };
+
+        // turnPIDControllers = new PIDController[] {
+        //     new PIDController(SwerveConstants.DRIVE_PID_VALUES[0], SwerveConstants.DRIVE_PID_VALUES[1], SwerveConstants.DRIVE_PID_VALUES[2]),
+        //     new PIDController(SwerveConstants.DRIVE_PID_VALUES[0], SwerveConstants.DRIVE_PID_VALUES[1], SwerveConstants.DRIVE_PID_VALUES[2]),
+        //     new PIDController(SwerveConstants.DRIVE_PID_VALUES[0], SwerveConstants.DRIVE_PID_VALUES[1], SwerveConstants.DRIVE_PID_VALUES[2]),
+        //     new PIDController(SwerveConstants.DRIVE_PID_VALUES[0], SwerveConstants.DRIVE_PID_VALUES[1], SwerveConstants.DRIVE_PID_VALUES[2])
+        // };
 
         for (ProfiledPIDController p : turnPIDControllers) {
             p.enableContinuousInput(0, 2 * Math.PI);
@@ -112,8 +121,113 @@ public class SwerveSubsystem extends SubsystemBase {
         }
     }
 
+    // limelight stuff
+    private RawFiducial[] getLimelightData() {
+        RawFiducial[] fiducials = LimelightHelpers.getRawFiducials("limelight-sublime");
+        for (RawFiducial fiducial : fiducials) {
+            int id = fiducial.id;                    // Tag ID
+            double txnc = fiducial.txnc;             // X offset (no crosshair)
+            double tync = fiducial.tync;             // Y offset (no crosshair)
+            double ta = fiducial.ta;                 // Target area
+            double distToCamera = fiducial.distToCamera;  // Distance to camera
+            double distToRobot = fiducial.distToRobot;    // Distance to robot
+            double ambiguity = fiducial.ambiguity;   // Tag pose ambiguity
+    };
+    return fiducials;
+    }
+
+    public double limelightAlignStrafe() {
+        double currentTx = 0 ; 
+        RawFiducial[] limelightData  = getLimelightData();
+
+        if (limelightData.length == 0) {
+            return 0;
+        }
+    
+        for (int i = 0; i < limelightData.length; i++) {
+            RawFiducial currentEntry = limelightData[i];
+            currentTx = currentEntry.txnc;
+            // System.out.println(currentTx);
+        }
+
+        double strafeSpeed = 0.75 * -(currentTx - 11);
+
+
+        if (Math.abs(strafeSpeed) <= 2) {
+            if (strafeSpeed > 0) {
+                strafeSpeed = (currentTx <= 13.2) ? 1 : 2;
+            } else {
+                strafeSpeed = (currentTx >= 10.2) ? -1 : -2;
+            }
+        }
+    
+        if (11.2 <= currentTx && currentTx <= 12.2)  {
+            strafeSpeed = 0;
+        }
+
+        return strafeSpeed;
+    }
+
+    public double limelightAlignDrive() {
+        double speed = -5;
+        double currentTa = 0; 
+        int id = 0; 
+        // double limelightMountAngleDegrees = 0.0; 
+        // double limelightLensHeightInches = 8;
+        // double goalHeightInches = 9.5; 
+
+        RawFiducial[] limelightData  = getLimelightData();
+        for (int i = 0; i < limelightData.length; i++) {
+            RawFiducial currentEntry = limelightData[i];
+            currentTa = currentEntry.ta;
+            id = currentEntry.id;
+        }
+
+        if (id == 0) {
+            return 0;
+        }
+
+        if (currentTa >= 0.25 && currentTa <= 0.29) {
+            return 0;
+        }
+    
+        if (Math.abs(currentTa) <= 0.2) {
+            speed = 2;
+        } else if (Math.abs(currentTa) >= 0.34) {
+            speed = -2;
+        }
+    
+        if (Math.abs(currentTa - 0.27) < 0.35) {
+            speed = (speed > 0) ? 0.5 : -0.5;
+        }
+    
+        return speed;
+
+        // double angleToGoalDegrees = limelightMountAngleDegrees + currentTy;
+        // double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
+
+        // double distanceFromLimelightToGoalInches = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
+
+        // System.out.println("Distance from limelight: " + distanceFromLimelightToGoalInches);
+        // System.out.println("Angle: " + currentTy);
+    }
+
     @Override 
     public void periodic () {
+        double currentTa = 0 ; 
+        double currentTx = 0 ;
+        RawFiducial[] limelightData  = getLimelightData();
+        for (int i = 0; i < limelightData.length; i++) {
+            RawFiducial currentEntry = limelightData[i];
+            currentTa = currentEntry.ta;
+            currentTx = currentEntry.txnc;
+        }   
+        SmartDashboard.putNumber("Limelight/TX", currentTx);
+        SmartDashboard.putBoolean("Limelight/TX Aligned", (currentTx > 11 && currentTx < 12.2));
+        SmartDashboard.putNumber("Limelight/TA", currentTa);
+        SmartDashboard.putBoolean("Limelight/TA Aligned", (currentTa > .249 && currentTa < .305));
+
+
         odometry.update(gyro.getRotation2d(), getPositions());
         field.setRobotPose(getPose());
         // transfering the controller inputs into SwerveModuleState
@@ -137,20 +251,27 @@ public class SwerveSubsystem extends SubsystemBase {
         };
         SmartDashboard.putNumberArray("Controller State", controllerStatesAsDoubles);
 
-        logStates();
+        logStates(); 
     }
 
 
-    public void drive(double y, double x, double theta, boolean fieldRelative, boolean resetPID, boolean resetGyro) {
-        ChassisSpeeds newDesiredSpeeds = new ChassisSpeeds(
+    public void drive(double y, double x, double theta, boolean fieldRelative, boolean alignLimelight, boolean resetPID, boolean resetGyro) {
+        ChassisSpeeds newDesiredSpeeds; 
+        
+        if (alignLimelight) { 
+            newDesiredSpeeds = new ChassisSpeeds(y, x, theta);
+        } else { 
+            newDesiredSpeeds = new ChassisSpeeds(
             SwerveConstants.MAX_TRANSLATIONAL_SPEED * y, 
             SwerveConstants.MAX_TRANSLATIONAL_SPEED * x,
             SwerveConstants.MAX_ROTATIONAL_SPEED * theta
         );
+        }
 
         if (resetPID) {
             for (int i = 0; i < 4; i++) {
                 turnPIDControllers[i].reset(modules[i].getAngle().getRadians(), modules[i].getVelocity());
+                // turnPIDControllers[i].reset();
             }
         }
         // reset gyro button
