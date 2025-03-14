@@ -227,6 +227,22 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Limelight/TA", currentTa);
         SmartDashboard.putBoolean("Limelight/TA Aligned", (currentTa > .249 && currentTa < .305));
 
+        if  (!(currentTa > .249 && currentTa < .305)) { 
+            if (currentTa < .249) {
+                SmartDashboard.putString("Limelight/TA F or B", "Forwards");
+            } else if (currentTa > .305) {
+                SmartDashboard.putString("Limelight/TA F or B", "Backwards");
+            }
+        } else {
+            SmartDashboard.putString("Limelight/TA F or B", "GOOD");
+        }
+        
+
+        SmartDashboard.putString("Limelight/TA Aligned", ((currentTa < .249) ? "Forward" : "backwards"));
+
+
+        
+
 
         odometry.update(gyro.getRotation2d(), getPositions());
         field.setRobotPose(getPose());
