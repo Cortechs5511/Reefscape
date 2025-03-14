@@ -43,6 +43,14 @@ public class OI {
         }
     }
 
+    public boolean getDriverRightBumper() { 
+        return driverController.getRightBumperButton();
+    }
+
+    public boolean getDriverLeftBumper() { 
+        return driverController.getLeftBumperButton();
+    }
+
     public double getOperatorLeftY() {
         double value = operatorController.getLeftY();
         if (Math.abs(value) < OIConstants.DEADBAND) {
@@ -192,6 +200,10 @@ public class OI {
     // // convert joystick range to 0-1
     // return (getOperatorLeftY()+1)/2;
     // }
+
+    public boolean driverLeftStick () {
+        return driverController.getLeftStickButton();
+    }
 
     public double getIntakePower() {
         return operatorLeftTrigger();

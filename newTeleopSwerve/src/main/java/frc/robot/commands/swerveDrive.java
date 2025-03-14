@@ -7,6 +7,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class swerveDrive extends Command{
     private final SwerveSubsystem swerve;
     private final OI oi = OI.getInstance();
+    private double xValue;
+    private double yValue;
+    private boolean fieldRelative; 
 
     public swerveDrive(SwerveSubsystem subsystem) {
         swerve = subsystem;
@@ -15,8 +18,36 @@ public class swerveDrive extends Command{
 
     @Override
     public void execute() {
+        
+        fieldRelative = false;
+        if (oi.driverPOV() == 180) {
+            xValue = -.1;
+            if (oi.getDriverLeftBumper()) {
+                xValue = -.05;
+            }
+        } else if (oi.driverPOV() == 0) {
+            xValue = .1;
+            if (oi.getDriverLeftBumper()) {
+                xValue = .05;
+            }
+        } else if (oi.driverPOV() == 90) {
+            yValue = -.1;
+            if (oi.getDriverLeftBumper()) {
+                yValue = -.05;
+            }
+        } else if (oi.driverPOV() == 270) {
+            yValue = .1;
+            if (oi.getDriverLeftBumper()) {
+                yValue = .05;
+            }
+        } else { 
+            xValue = -oi.getDriverLeftY();
+            yValue = -oi.getDriverLeftX();
+            fieldRelative = true;
+        }
 
-        swerve.drive(-oi.getDriverLeftY(), -oi.getDriverLeftX(), -oi.getDriverRightX(), !oi.driverY(), oi.driverB(), oi.driverX());
+        swerve.drive(xValue, yValue, -oi.getDriverRightX(), fieldRelative, false, oi.driverB(), oi.driverX());
+
         // swerve.drive(0.5, 0, 0, false);
         swerve.logStates();
     }
