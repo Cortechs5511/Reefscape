@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -149,12 +150,12 @@ public class SwerveSubsystem extends SubsystemBase {
             currentTx = currentEntry.txnc;
         }
 
-        double strafeSpeed = 0.75 * -(currentTx - 2.3);
+        double strafeSpeed = .8 * -(currentTx - 2.3);
         
-
-        if (1.6 <= currentTx && currentTx <= 2.9)  {
-            return 0;
-        }
+        // 1.8 to 2.9
+        if (2.1 <= currentTx && currentTx <= 2.6)  {
+            return 0.001; 
+    }
 
 
         if (Math.abs(strafeSpeed) <= 2) {
@@ -189,9 +190,9 @@ public class SwerveSubsystem extends SubsystemBase {
             return 0;
         }
 
-        speed = 0.75 *  100 * -(currentTa - .13);
-
-        if (currentTa >= .1 && currentTa <= 0.15) {
+        speed = 0.75 *  100 * -(currentTa - .15);
+        // not sure best value for ta right now 
+        if (currentTa >= .14 && currentTa <= 0.17) {
             return 0;
         }
     
@@ -227,9 +228,9 @@ public class SwerveSubsystem extends SubsystemBase {
             currentTx = currentEntry.txnc;
         }   
         SmartDashboard.putNumber("Limelight/TX", currentTx);
-        SmartDashboard.putBoolean("Limelight/TX Aligned", (currentTx > 11 && currentTx < 12.2));
+        SmartDashboard.putBoolean("Limelight/TX Aligned", (currentTx > 1.7 && currentTx < 2.9));
         SmartDashboard.putNumber("Limelight/TA", currentTa);
-        SmartDashboard.putBoolean("Limelight/TA Aligned", (currentTa > .249 && currentTa < .305));
+        SmartDashboard.putBoolean("Limelight/TA Aligned", (currentTa > .14 && currentTa < .19));
 
         if  (!(currentTa > .249 && currentTa < .305)) { 
             if (currentTa < .249) {
