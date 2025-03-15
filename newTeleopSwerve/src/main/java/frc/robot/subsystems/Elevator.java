@@ -106,11 +106,11 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("Elevator/Raw Velocity", TBEncoder.getVelocity());
         SmartDashboard.putNumber("Elevator/Relative Velocity", relEncoder.getVelocity());
         
-        if (operatorController.getPOV() == 0) {
-            cumulativeRotations = 0;
-        }
-        if (operatorController.getPOV() == 90) { 
-            cumulativeRotations = 2.5; 
-        }
+        // if (operatorController.getPOV() == 0) {
+        //     cumulativeRotations = 0;
+        // }
+        // if (operatorController.getPOV() == 90) { 
+        //     cumulativeRotations = 2.5; 
+        // }
     }
 }

@@ -149,7 +149,12 @@ public class SwerveSubsystem extends SubsystemBase {
             currentTx = currentEntry.txnc;
         }
 
-        double strafeSpeed = 0.75 * -(currentTx - 11);
+        double strafeSpeed = 0.75 * -(currentTx - 11.7);
+        
+
+        if (11.2 <= currentTx && currentTx <= 12.2)  {
+            return 0;
+        }
 
 
         if (Math.abs(strafeSpeed) <= 2) {
@@ -162,10 +167,6 @@ public class SwerveSubsystem extends SubsystemBase {
             }
         }
     
-        if (11.2 <= currentTx && currentTx <= 12.2)  {
-            strafeSpeed = 0;
-        }
-
         return strafeSpeed;
     }
 
