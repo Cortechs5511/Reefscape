@@ -1,6 +1,6 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+// the WPILib BSD license file in the root dirdriveectory of this project.
 
 package frc.robot;
 
@@ -9,7 +9,6 @@ import frc.robot.commands.Autos;
 
 import frc.robot.commands.alignLimelight;
 import frc.robot.commands.alignLimelightDist;
-import frc.robot.commands.setSwerveAngles;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -79,11 +78,7 @@ public class RobotContainer {
     // cancelling on release. 
     
     m_driverController.a().whileTrue(new alignLimelight(m_swerveSubsystem));
-    
-    // m_driverController.start().whileTrue(new setSwerveAngles(m_swerveSubsystem, 0));
-    // m_driverController.back().whileTrue(new setSwerveAngles(m_swerveSubsystem, 90));
-
-    // m_driverController.b().whileTrue(new alignLimelightDist(m_swerveSubsystem));
+    m_driverController.b().whileTrue(new alignLimelightDist(m_swerveSubsystem));
 
     // driving position (bottom) 
     m_operatorController.a().whileTrue(new setWristPosition(m_coral, 0.405)).whileTrue(new setElevatorPosition(m_elevator, 0, false));

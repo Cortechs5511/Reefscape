@@ -147,7 +147,6 @@ public class SwerveSubsystem extends SubsystemBase {
         for (int i = 0; i < limelightData.length; i++) {
             RawFiducial currentEntry = limelightData[i];
             currentTx = currentEntry.txnc;
-            // System.out.println(currentTx);
         }
 
         double strafeSpeed = 0.75 * -(currentTx - 11);
@@ -155,9 +154,11 @@ public class SwerveSubsystem extends SubsystemBase {
 
         if (Math.abs(strafeSpeed) <= 2) {
             if (strafeSpeed > 0) {
-                strafeSpeed = (currentTx <= 13.2) ? 1 : 2;
+                // strafeSpeed = (currentTx <= 13.2) ? 1 : 2;
+                strafeSpeed = 2;
             } else {
-                strafeSpeed = (currentTx >= 10.2) ? -1 : -2;
+                // strafeSpeed = (currentTx >= 10.2) ? -1 : -2;
+                strafeSpeed = -2;
             }
         }
     
@@ -187,20 +188,22 @@ public class SwerveSubsystem extends SubsystemBase {
             return 0;
         }
 
-        if (currentTa >= 0.25 && currentTa <= 0.29) {
+        speed = 0.75 *  100 * -(currentTa - .275);
+
+        if (currentTa >= 0.25 && currentTa <= 0.30) {
             return 0;
         }
     
-        if (Math.abs(currentTa) <= 0.2) {
-            speed = 2;
-        } else if (Math.abs(currentTa) >= 0.34) {
-            speed = -2;
+        if (Math.abs(speed) <= 2) {
+            if (speed > 0) {
+                // speed = (currentTx <= 13.2) ? 1 : 2;
+                speed = 2;
+            } else {
+                // speed = (currentTx >= 10.2) ? -1 : -2;
+                speed = -2;
+            }
         }
-    
-        if (Math.abs(currentTa - 0.27) < 0.35) {
-            speed = (speed > 0) ? 0.5 : -0.5;
-        }
-    
+       
         return speed;
 
         // double angleToGoalDegrees = limelightMountAngleDegrees + currentTy;
@@ -271,7 +274,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
 
-    public void drive(double y, double x, double theta, boolean fieldRelative, boolean alignLimelight, boolean resetPID, boolean resetGyro) {
+    public void drive(double y, double x, double theta, boolean fieldRelative, boolean alignLimelight, boolean resetGyro) {
         ChassisSpeeds newDesiredSpeeds; 
         
         if (alignLimelight) { 
@@ -284,12 +287,6 @@ public class SwerveSubsystem extends SubsystemBase {
         );
         }
 
-        if (resetPID) {
-            for (int i = 0; i < 4; i++) {
-                turnPIDControllers[i].reset(modules[i].getAngle().getRadians(), modules[i].getVelocity());
-                // turnPIDControllers[i].reset();
-            }
-        }
         // reset gyro button
         if (resetGyro) {
             gyro.resetGyro();
@@ -351,12 +348,6 @@ public class SwerveSubsystem extends SubsystemBase {
     //    }
     }
 
-    public void setAngles(double targetAngle) {
-        modules[0].setAngle(targetAngle, turnPIDControllers[0]);
-        modules[1].setAngle(targetAngle, turnPIDControllers[1]);
-        modules[2].setAngle(targetAngle, turnPIDControllers[2]);
-        modules[3].setAngle(targetAngle, turnPIDControllers[3]);
-    }
 
     public SwerveModuleState[] getStates() {
         SwerveModuleState[] currentStates = {

@@ -18,7 +18,7 @@ public class alignLimelightDist extends Command{
 
     @Override
     public void execute() {
-        swerve.drive(swerve.limelightAlignDrive(), 0, 0, false, true, false, false);
+        swerve.drive(swerve.limelightAlignDrive(), 0, 0, false, true, false);
         swerve.logStates();
     }
 }

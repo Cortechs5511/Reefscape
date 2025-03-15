@@ -19,7 +19,7 @@ public class alignLimelight extends Command{
     @Override
     public void execute() {
         // swerve.drive(oi.getDriverLeftY() * 1.5, swerve.limelightAlignStrafe(), 0, false, false, false);
-        swerve.drive(0, swerve.limelightAlignStrafe(), 0, false, true, false, false);
+        swerve.drive(0, swerve.limelightAlignStrafe(), 0, false, true, false);
         swerve.logStates();
     }
 }

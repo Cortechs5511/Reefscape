@@ -10,6 +10,7 @@ public class swerveDrive extends Command{
     private double xValue;
     private double yValue;
     private boolean fieldRelative; 
+    private boolean turnWheel = true;
 
     public swerveDrive(SwerveSubsystem subsystem) {
         swerve = subsystem;
@@ -18,6 +19,8 @@ public class swerveDrive extends Command{
 
     @Override
     public void execute() {
+
+        
         
         fieldRelative = false;
         if (oi.driverPOV() == 180) {
@@ -50,7 +53,7 @@ public class swerveDrive extends Command{
             fieldRelative = true;
         }
 
-        swerve.drive(xValue, yValue, -oi.getDriverRightX(), fieldRelative, false, oi.driverB(), oi.driverX());
+        swerve.drive(xValue, yValue, -oi.getDriverRightX(), fieldRelative, false,  oi.driverX());
 
         // swerve.drive(0.5, 0, 0, false);
         swerve.logStates();
