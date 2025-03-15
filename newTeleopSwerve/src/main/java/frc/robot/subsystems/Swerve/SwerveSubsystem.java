@@ -122,7 +122,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     // limelight stuff
-    private RawFiducial[] getLimelightData() {
+    public RawFiducial[] getLimelightData() {
         RawFiducial[] fiducials = LimelightHelpers.getRawFiducials("limelight-sublime");
         for (RawFiducial fiducial : fiducials) {
             int id = fiducial.id;                    // Tag ID
@@ -149,10 +149,10 @@ public class SwerveSubsystem extends SubsystemBase {
             currentTx = currentEntry.txnc;
         }
 
-        double strafeSpeed = 0.75 * -(currentTx - 11.7);
+        double strafeSpeed = 0.75 * -(currentTx - 2.3);
         
 
-        if (11.2 <= currentTx && currentTx <= 12.2)  {
+        if (1.6 <= currentTx && currentTx <= 2.9)  {
             return 0;
         }
 
@@ -189,9 +189,9 @@ public class SwerveSubsystem extends SubsystemBase {
             return 0;
         }
 
-        speed = 0.75 *  100 * -(currentTa - .275);
+        speed = 0.75 *  100 * -(currentTa - .13);
 
-        if (currentTa >= 0.25 && currentTa <= 0.30) {
+        if (currentTa >= .1 && currentTa <= 0.15) {
             return 0;
         }
     

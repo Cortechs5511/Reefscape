@@ -5,7 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
+import frc.robot.commands.taxiAuto;
 
 import frc.robot.commands.alignLimelight;
 import frc.robot.commands.alignLimelightDist;
@@ -19,6 +19,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.swerveDrive;
 import frc.robot.commands.Coral.setCoralPower;
 import frc.robot.commands.Coral.setWristPosition;
@@ -54,6 +55,8 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     autoChooser = AutoBuilder.buildAutoChooser();
+    autoChooser.addOption("taxi", new SequentialCommandGroup (new taxiAuto (m_swerveSubsystem, m_coral, m_elevator)));
+
     SmartDashboard.putData("Auto chooser", autoChooser);
     // Configure the trigger bindings
     m_swerveSubsystem.setDefaultCommand(new swerveDrive(m_swerveSubsystem));
