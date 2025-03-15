@@ -9,6 +9,7 @@ import frc.robot.commands.taxiAuto;
 
 import frc.robot.commands.alignLimelight;
 import frc.robot.commands.alignLimelightDist;
+import frc.robot.commands.l1auto;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -56,6 +57,7 @@ public class RobotContainer {
   public RobotContainer() {
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("taxi", new SequentialCommandGroup (new taxiAuto (m_swerveSubsystem, m_coral, m_elevator)));
+    autoChooser.addOption("l2", new SequentialCommandGroup (new l1auto (m_swerveSubsystem, m_coral, m_elevator)));
 
     SmartDashboard.putData("Auto chooser", autoChooser);
     // Configure the trigger bindings
