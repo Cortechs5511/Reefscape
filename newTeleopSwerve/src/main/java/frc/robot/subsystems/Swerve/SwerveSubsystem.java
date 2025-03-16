@@ -192,7 +192,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
         speed = 0.75 *  100 * -(currentTa - .15);
         // not sure best value for ta right now 
-        if (currentTa >= .14 && currentTa <= 0.17) {
+        if (currentTa >= .145 && currentTa <= 0.17) {
             return 0;
         }
     
@@ -230,7 +230,7 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Limelight/TX", currentTx);
         SmartDashboard.putBoolean("Limelight/TX Aligned", (currentTx > 1.7 && currentTx < 2.9));
         SmartDashboard.putNumber("Limelight/TA", currentTa);
-        SmartDashboard.putBoolean("Limelight/TA Aligned", (currentTa > .14 && currentTa < .19));
+        SmartDashboard.putBoolean("Limelight/TA Aligned", (currentTa > .145 && currentTa < .19));
 
         if  (!(currentTa > .249 && currentTa < .305)) { 
             if (currentTa < .249) {

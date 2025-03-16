@@ -73,35 +73,43 @@ public class l1auto extends Command {
     @Override
     public void execute() {
 
-        m_coral.setWristPos(0.405);
 
 
-        // if (!timer.hasElapsed(.75)) { 
-        //     m_coral.setWristPos(0.405);
-        // } else if (timer.hasElapsed(.75) && !timer.hasElapsed(4)){ 
-        //     m_swerve.drive(10, 0, 0, false, true, false);
-        // } else if (timer.hasElapsed(5) && !timer.hasElapsed(5.3)) { 
-        //     m_swerve.drive(-0.001, 0, 0, false, true, false);
-        // } else if (timer.hasElapsed(5.3) && !timer.hasElapsed(8.3)) { 
-        //     m_swerve.drive(-.05, 0, 0, false, true, false);
-        // } else if (timer.hasElapsed(8.3) && !timer.hasElapsed(8.6)) {
-        //     m_swerve.drive(0, -0.001, 0, false, true, false);
-        // } else if (timer.hasElapsed(8.6) && !timer.hasElapsed(11)) {
-        //     if (checkLimeLight()) {
-        //         m_swerve.drive(0, m_swerve.limelightAlignStrafe(), 0, false, true, false);
-        //     } else {
-        //         m_swerve.drive(0, 0, 0, false, true, false);
-        //     }
-        // } else if (timer.hasElapsed(11) && !timer.hasElapsed(13)) { 
-        //     if (checkLimeLight()) { 
-        //         m_swerve.drive(m_swerve.limelightAlignDrive(), 0, 0, false, true, false);
-        //         m_swerve.drive(0, 0, 0, false, true, false);
-        //     }
-        // } else if (timer.hasElapsed(13) && !timer.hasElapsed(14)) {
-        //     m_coral.setWristPos(0.595);
-        // } else if (timer.hasElapsed(14.5)) {
-        //     m_coral.setFlywheelPower(0, .6);
-        // }
+        if (!timer.hasElapsed(.75)) { 
+            m_coral.setWristPos(0.405);
+        } else if (timer.hasElapsed(.75) && !timer.hasElapsed(4)){ 
+            m_coral.setWristPos(0.405);
+            m_swerve.drive(40, 0, 0, false, true, false);
+        } else if (timer.hasElapsed(5) && !timer.hasElapsed(5.3)) { 
+            m_coral.setWristPos(0.405);
+            m_swerve.drive(-0.001, 0, 0, false, true, false);
+        } else if (timer.hasElapsed(5.3) && !timer.hasElapsed(8.3)) { 
+            m_coral.setWristPos(0.405);
+            m_swerve.drive(-.05, 0, 0, false, true, false);
+        } else if (timer.hasElapsed(8.3) && !timer.hasElapsed(8.6)) {
+            m_coral.setWristPos(0.405);
+            m_swerve.drive(0, -0.001, 0, false, true, false);
+        } else if (timer.hasElapsed(8.6) && !timer.hasElapsed(11)) {
+            m_coral.setWristPos(0.405);
+            if (checkLimeLight()) {
+                m_swerve.drive(0, m_swerve.limelightAlignStrafe(), 0, false, true, false);
+            } else {
+                m_swerve.drive(0, 0, 0, false, true, false);
+            }
+        } else if (timer.hasElapsed(11) && !timer.hasElapsed(13)) { 
+            m_coral.setWristPos(0.405);
+
+            if (checkLimeLight()) { 
+                m_swerve.drive(m_swerve.limelightAlignDrive(), 0, 0, false, true, false);
+            } else {
+                m_swerve.drive(0, 0, 0, false, true, false);
+            }
+        } else if (timer.hasElapsed(13) && !timer.hasElapsed(14)) {
+            m_coral.setWristPos(0.595);
+        } else if (timer.hasElapsed(14.5)) {
+            m_coral.setWristPos(0.595);
+            m_coral.setFlywheelPower(0, .6);
+        }
                 
     }
 }
