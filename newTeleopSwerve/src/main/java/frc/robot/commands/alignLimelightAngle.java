@@ -7,24 +7,24 @@ import java.security.cert.X509CRL;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class alignLimelightDist extends Command{
+public class alignLimelightAngle extends Command{
     private final SwerveSubsystem swerve;
     private final OI oi = OI.getInstance();
 
-    public alignLimelightDist(SwerveSubsystem subsystem) {
+    public alignLimelightAngle(SwerveSubsystem subsystem) {
     swerve = subsystem;
         addRequirements(subsystem);
     }
 
     @Override
     public void execute() {
-        swerve.drive(swerve.limelightAlignDrive(), 0, 0, false, true, false);
+        swerve.drive(0, 0, swerve.alignAngle(), false, true, false);
         swerve.logStates();
     }
 
-    @Override
-    public boolean isFinished() { 
-        return swerve.taIsAligned();
+    @Override 
+    public boolean isFinished() {
+        return swerve.angleIsAligned();
     }
 }
 

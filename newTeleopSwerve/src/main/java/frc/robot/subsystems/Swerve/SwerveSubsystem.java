@@ -7,6 +7,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -122,6 +123,38 @@ public class SwerveSubsystem extends SubsystemBase {
         }
     }
 
+    private double getDesiredYawForTag(int tagID) {
+        switch (tagID) { 
+            // case 6:   
+            case 7:
+            case 18:
+                return Math.toRadians(0);
+    
+            case 6:
+            case 19:
+                return Math.toRadians(60);
+    
+            case 11:
+            case 20:
+                return Math.toRadians(120);
+    
+            case 10:
+            case 21:
+                return Math.toRadians(180);
+    
+            case 9:
+            case 22:
+                return Math.toRadians(-120);
+    
+            case 8:
+            case 17:
+                return Math.toRadians(-60);
+    
+            default:
+                return Math.toRadians(0);
+        }
+    }
+
     // limelight stuff
     public RawFiducial[] getLimelightData() {
         RawFiducial[] fiducials = LimelightHelpers.getRawFiducials("limelight-sublime");
@@ -135,6 +168,26 @@ public class SwerveSubsystem extends SubsystemBase {
             double ambiguity = fiducial.ambiguity;   // Tag pose ambiguity
     };
     return fiducials;
+    }
+
+    public double alignAngle() {
+        RawFiducial[] limelightData = getLimelightData();
+        if (limelightData.length == 0) {
+            return 0.0;
+        }
+    
+        int tagID = limelightData[limelightData.length-1].id;
+    
+        double desiredYaw = getDesiredYawForTag(tagID); 
+    
+        double currentYaw = gyro.getRotation2d().getRadians();
+        
+        double rotationCmd = turnPIDControllers[0].calculate(currentYaw, desiredYaw);
+    
+        rotationCmd = Math.min(rotationCmd, 2.0); 
+        rotationCmd = Math.max(rotationCmd, -2.0); 
+    
+        return rotationCmd;
     }
 
     public double limelightAlignStrafe() {
@@ -207,14 +260,39 @@ public class SwerveSubsystem extends SubsystemBase {
         }
        
         return speed;
+    }
 
-        // double angleToGoalDegrees = limelightMountAngleDegrees + currentTy;
-        // double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
+    public boolean txIsAligned() { 
+        double currentTx = 0 ; 
+        RawFiducial[] limelightData  = getLimelightData();
+        for (int i = 0; i < limelightData.length; i++) {
+            RawFiducial currentEntry = limelightData[i];
+            currentTx = currentEntry.txnc;
+        }   
+        return (currentTx > 1.7 && currentTx < 2.9);
+    }
 
-        // double distanceFromLimelightToGoalInches = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
+    public boolean taIsAligned() { 
+        double currentTa = 0 ; 
+        RawFiducial[] limelightData  = getLimelightData();
+        for (int i = 0; i < limelightData.length; i++) {
+            RawFiducial currentEntry = limelightData[i];
+            currentTa = currentEntry.ta;
+        }   
+        return (currentTa > .145 && currentTa < .19);
+    }
 
-        // System.out.println("Distance from limelight: " + distanceFromLimelightToGoalInches);
-        // System.out.println("Angle: " + currentTy);
+    public boolean angleIsAligned() {
+        int id = 0;
+        RawFiducial[] limelightData  = getLimelightData();
+        for (int i = 0; i < limelightData.length; i++) {
+            RawFiducial currentEntry = limelightData[i];
+            id = currentEntry.id;
+        }   
+
+        double desiredAngle = getDesiredYawForTag(id);
+
+        return Math.abs(desiredAngle - gyro.getRotation2d().getRadians()) <= 0.087;
     }
 
     @Override 
