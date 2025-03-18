@@ -37,7 +37,12 @@ public final class Constants {
     // MAX and MIN position of wrist
     public static final double MAX_WRIST_POS = 0.405;
     public static final double MIN_WRIST_POS = 0.89;
+    public static final double PASSIVE_FALL_TOP = .5; // position where the wrist no longer falls down passively
+    public static final double PASSIVE_FALL_BOT = .8; // position where we no longer need a passive boost to prevent wrist from falling
+    public static final double PASSIVE_POWER = .05;
     public static final double WRIST_MAX_POWER = 0.3;
+    public static final double[] WRIST_PID_VALUES = {0.7, 0.0, 0.0}; // change this when testing
+    public static final double ERROR_TOLERANCE = 0.02;
     
     public static final double FLYWHEEL_INTAKE_MAX_POWER = 0.5;
     public static final double FLYWHEEL_OUTTAKE_MAX_POWER = -1.0;

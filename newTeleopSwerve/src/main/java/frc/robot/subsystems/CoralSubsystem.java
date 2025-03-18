@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -15,6 +16,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import frc.robot.Constants.CoralConstants;
 
 public class CoralSubsystem extends SubsystemBase {
+    private final PIDController wristPIDController = new PIDController(CoralConstants.WRIST_PID_VALUES[0], CoralConstants.WRIST_PID_VALUES[1], CoralConstants.WRIST_PID_VALUES[2]);
+
     private final SparkMax flywheel = createCoralController(CoralConstants.CORAL_FLYWHEEL_ID, true);
     private final SparkMax wrist = createCoralController(CoralConstants.CORAL_WRIST_ID, true);
 
@@ -24,7 +27,6 @@ public class CoralSubsystem extends SubsystemBase {
     private XboxController operatorController = new XboxController(1);
 
     private final SparkAbsoluteEncoder TBEncoder = wrist.getAbsoluteEncoder();
-
     private final RelativeEncoder wristEncoder = wrist.getEncoder();
 
     public void setFlywheelPower(double intakePower, double outtakePower) {
@@ -43,9 +45,11 @@ public class CoralSubsystem extends SubsystemBase {
             wrist.set(0);
         } else if (speed < 0 && TBEncoder.getPosition() > CoralConstants.MIN_WRIST_POS) {
             wrist.set(0);
-        } else {
+        } else if (TBEncoder.getPosition() > CoralConstants.PASSIVE_FALL_TOP && TBEncoder.getPosition() < CoralConstants.PASSIVE_FALL_BOT) {
+            wrist.set((speed == 0) ? CoralConstants.PASSIVE_POWER : speed);
+        }  else {
             wrist.set(speed);
-        }   
+        }
         SmartDashboard.putNumber("Coral/input speed", speed);
     }
 
@@ -62,6 +66,25 @@ public class CoralSubsystem extends SubsystemBase {
             } else{ 
                 setWristPower(0.5);
             }
+        }
+    }
+
+
+    // PID for wrist
+    public void setWristPosPID (double targetPos) {
+        double currentPos = TBEncoder.getPosition();
+        double pidOutput = wristPIDController.calculate(currentPos, targetPos);
+        setWristPower(pidOutput);
+
+        double error = Math.abs(currentPos - targetPos);
+        
+        // play around with error
+        if (error < CoralConstants.ERROR_TOLERANCE) {
+            wristPIDController.setSetpoint(targetPos);
+            setWristPower(0);
+
+            wristPIDController.setSetpoint(targetPos);
+            SmartDashboard.putBoolean("Coral/At Target", true);
         }
     }
 

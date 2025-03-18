@@ -21,7 +21,8 @@ public class setWristPosition extends Command {
     }
 
     @Override
-    public void execute() {
+    public void execute() { 
+        // change to PID here
         coral.setWristPos(targetPosition);
         SmartDashboard.putNumber("OI/Elevator Power", oi.getElevatorPower());
     }
