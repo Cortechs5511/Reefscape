@@ -39,9 +39,9 @@ public class CoralSubsystem extends SubsystemBase {
 
 
     public void setWristPower(double speed) {
-        if (speed > 0 && TBEncoder.getPosition() < 0.405) {
+        if (speed > 0 && TBEncoder.getPosition() < CoralConstants.MAX_WRIST_POS) {
             wrist.set(0);
-        } else if (speed < 0 && TBEncoder.getPosition() > 0.89) {
+        } else if (speed < 0 && TBEncoder.getPosition() > CoralConstants.MIN_WRIST_POS) {
             wrist.set(0);
         } else {
             wrist.set(speed);

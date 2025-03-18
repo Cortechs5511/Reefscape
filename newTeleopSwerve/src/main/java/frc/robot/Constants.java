@@ -35,7 +35,7 @@ public final class Constants {
     public static final int THROUGH_BORE_ID = 8;
 
     // MAX and MIN position of wrist
-    public static final double MAX_WRIST_POS = 0.355;
+    public static final double MAX_WRIST_POS = 0.405;
     public static final double MIN_WRIST_POS = 0.89;
     public static final double WRIST_MAX_POWER = 0.3;
     
@@ -139,6 +139,9 @@ public final class Constants {
     // Swerve Module Location Constants
     // each module is Math.sqrt(2) * Units.inchesToMeters(23) away from the center
 
+
+
+    // alignment constants 
     
 
   }

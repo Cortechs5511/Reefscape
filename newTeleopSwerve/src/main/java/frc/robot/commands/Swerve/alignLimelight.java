@@ -1,17 +1,10 @@
-package frc.robot.commands;
+package frc.robot.commands.Swerve;
 
-import frc.robot.OI;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
-
-import java.security.cert.X509CRL;
-
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class alignLimelight extends Command{
     private final SwerveSubsystem swerve;
-    private final OI oi = OI.getInstance();
-    private final Timer timer = new Timer();
     private double speed = 0 ; 
 
 

@@ -1,15 +1,12 @@
-package frc.robot.commands;
+package frc.robot.commands.Swerve;
 
-import frc.robot.OI;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
-import java.security.cert.X509CRL;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class alignLimelightAngle extends Command{
     private final SwerveSubsystem swerve;
-    private final OI oi = OI.getInstance();
 
     public alignLimelightAngle(SwerveSubsystem subsystem) {
     swerve = subsystem;

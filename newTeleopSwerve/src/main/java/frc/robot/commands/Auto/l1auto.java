@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.Auto;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -7,14 +7,14 @@ import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
-public class l4auto extends Command {
+public class l1auto extends Command {
     private final SwerveSubsystem m_swerve;
     private final CoralSubsystem m_coral;
     private final Elevator m_elevator;
 
     private final Timer timer = new Timer();
 
-    public l4auto(SwerveSubsystem swerve, CoralSubsystem coral, Elevator elevator) {
+    public l1auto(SwerveSubsystem swerve, CoralSubsystem coral, Elevator elevator) {
         this.m_swerve = swerve;
         this.m_coral = coral;
         this.m_elevator = elevator;
@@ -57,7 +57,7 @@ public class l4auto extends Command {
             return false;
         }
 
-        if ((currentTa > .249 && currentTa < .305) && (currentTx > 11 && currentTx < 12.2)) { 
+        if ((currentTa >= .1 && currentTa <= .15) && (currentTx >= 1.6 && currentTx <= 2.9)) { 
             return true;
         }
         
@@ -75,34 +75,41 @@ public class l4auto extends Command {
 
 
 
-        if (!timer.hasElapsed(4)){ 
-            m_swerve.drive(40, 0, 0, false, false, false);
+        if (!timer.hasElapsed(.75)) { 
+            m_coral.setWristPos(0.405);
+        } else if (timer.hasElapsed(.75) && !timer.hasElapsed(4)){ 
+            m_coral.setWristPos(0.405);
+            m_swerve.drive(40, 0, 0, false, true, false);
         } else if (timer.hasElapsed(5) && !timer.hasElapsed(5.3)) { 
+            m_coral.setWristPos(0.405);
             m_swerve.drive(-0.001, 0, 0, false, true, false);
         } else if (timer.hasElapsed(5.3) && !timer.hasElapsed(8.3)) { 
+            m_coral.setWristPos(0.405);
             m_swerve.drive(-.05, 0, 0, false, true, false);
         } else if (timer.hasElapsed(8.3) && !timer.hasElapsed(8.6)) {
+            m_coral.setWristPos(0.405);
             m_swerve.drive(0, -0.001, 0, false, true, false);
         } else if (timer.hasElapsed(8.6) && !timer.hasElapsed(11)) {
+            m_coral.setWristPos(0.405);
             if (checkLimeLight()) {
                 m_swerve.drive(0, m_swerve.limelightAlignStrafe(), 0, false, true, false);
             } else {
                 m_swerve.drive(0, 0, 0, false, true, false);
             }
         } else if (timer.hasElapsed(11) && !timer.hasElapsed(13)) { 
+            m_coral.setWristPos(0.405);
+
             if (checkLimeLight()) { 
-                m_swerve.drive(m_swerve.limelightAlignStrafe(), 0, 0, false, true, false);
+                m_swerve.drive(m_swerve.limelightAlignDrive(), 0, 0, false, true, false);
             } else {
                 m_swerve.drive(0, 0, 0, false, true, false);
             }
-        } else if (timer.hasElapsed(13) && !timer.hasElapsed(14.75)) {
-            if (checkAlignment()) {
-                m_coral.setWristPos(0.55);
-            }
+        } else if (timer.hasElapsed(13) && !timer.hasElapsed(14)) {
+            m_coral.setWristPos(0.595);
+        } else if (timer.hasElapsed(14.5)) {
+            m_coral.setWristPos(0.595);
+            m_coral.setFlywheelPower(0, .6);
         }
-
-
-
-        
+                
     }
 }

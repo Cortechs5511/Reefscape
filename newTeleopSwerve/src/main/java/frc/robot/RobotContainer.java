@@ -5,15 +5,10 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.taxiAuto;
-
-import frc.robot.commands.alignLimelight;
-import frc.robot.commands.alignLimelightAngle;
-import frc.robot.commands.alignLimelightDist;
-import frc.robot.commands.l1auto;
+import frc.robot.commands.Auto.l1auto;
+import frc.robot.commands.Auto.taxiAuto;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -22,11 +17,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.swerveDrive;
 import frc.robot.commands.Coral.setCoralPower;
 import frc.robot.commands.Coral.setWristPosition;
 import frc.robot.commands.Elevator.setElevatorPosition;
 import frc.robot.commands.Elevator.setElevatorPower;
+import frc.robot.commands.Swerve.alignLimelight;
+import frc.robot.commands.Swerve.alignLimelightDist;
+import frc.robot.commands.Swerve.swerveDrive;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -38,7 +35,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem();
   private final Elevator m_elevator = new Elevator();
   private final CoralSubsystem m_coral = new CoralSubsystem();
