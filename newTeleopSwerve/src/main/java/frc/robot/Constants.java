@@ -78,6 +78,8 @@ public final class Constants {
     // approaching values
     public static final double SLOWED_POWER_UP = 0.05;
     public static final double SLOWED_POWER_DOWN = 0.075;
+    public static final double [] ELEVATOR_PID_VALUES = {0.7, 0.0, 0.0};
+    public static final double ERROR_TOLERANCE = 0.05;
 
 
 
