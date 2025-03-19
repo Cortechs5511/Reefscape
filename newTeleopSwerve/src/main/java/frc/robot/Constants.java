@@ -39,9 +39,9 @@ public final class Constants {
     public static final double MIN_WRIST_POS = 0.89;
     public static final double PASSIVE_FALL_TOP = .5; // position where the wrist no longer falls down passively
     public static final double PASSIVE_FALL_BOT = .8; // position where we no longer need a passive boost to prevent wrist from falling
-    public static final double PASSIVE_POWER = .05;
+    public static final double PASSIVE_POWER = .01;
     public static final double WRIST_MAX_POWER = 0.3;
-    public static final double[] WRIST_PID_VALUES = {0.7, 0.0, 0.0}; // change this when testing
+    public static final double[] WRIST_PID_VALUES = {5.25, 0.0, 0.0}; // change this when testing
     public static final double ERROR_TOLERANCE = 0.02;
     
     public static final double FLYWHEEL_INTAKE_MAX_POWER = 0.5;
@@ -78,7 +78,7 @@ public final class Constants {
     // approaching values
     public static final double SLOWED_POWER_UP = 0.05;
     public static final double SLOWED_POWER_DOWN = 0.075;
-    public static final double [] ELEVATOR_PID_VALUES = {0.7, 0.0, 0.0};
+    public static final double [] ELEVATOR_PID_VALUES = {1.2, 0.0, 0.0};
     public static final double ERROR_TOLERANCE = 0.05;
 
 

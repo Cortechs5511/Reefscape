@@ -29,6 +29,7 @@ public class Elevator extends SubsystemBase {
     private double cumulativeRotations = 0;
     private double previousPos = TBEncoder.getPosition();
     private double changeInPos = 0;
+    private double pidOutput = 0;
 
     public Elevator() {
         // tolerance for when to stop using PID
@@ -76,7 +77,7 @@ public class Elevator extends SubsystemBase {
 
     public void setPositionPID(double targetPosition) {
         double currentPos = getAccumulatedRotations();
-        double pidOutput = elevatorPIDController.calculate(currentPos, targetPosition);
+        pidOutput = elevatorPIDController.calculate(currentPos, targetPosition);
         elevatorLeft.set(pidOutput);
         elevatorRight.set(pidOutput);
 
@@ -125,6 +126,7 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("Elevator/Accumulated Position", getAccumulatedRotations());
         SmartDashboard.putNumber("Elevator/Raw Velocity", TBEncoder.getVelocity());
         SmartDashboard.putNumber("Elevator/Relative Velocity", relEncoder.getVelocity());
+        SmartDashboard.putNumber("Elevator/PID Output", pidOutput);
         
         // if (operatorController.getPOV() == 0) {
         //     cumulativeRotations = 0;

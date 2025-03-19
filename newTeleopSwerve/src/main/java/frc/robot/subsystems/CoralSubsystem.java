@@ -21,6 +21,8 @@ public class CoralSubsystem extends SubsystemBase {
     private final SparkMax flywheel = createCoralController(CoralConstants.CORAL_FLYWHEEL_ID, true);
     private final SparkMax wrist = createCoralController(CoralConstants.CORAL_WRIST_ID, true);
 
+    private double pidOutput = 0 ;
+
     // dev
     private double outputPower;
     
@@ -73,9 +75,8 @@ public class CoralSubsystem extends SubsystemBase {
     // PID for wrist
     public void setWristPosPID (double targetPos) {
         double currentPos = TBEncoder.getPosition();
-        double pidOutput = wristPIDController.calculate(currentPos, targetPos);
-        setWristPower(pidOutput);
-
+        pidOutput = wristPIDController.calculate(currentPos, targetPos);
+        setWristPower(-pidOutput);
         double error = Math.abs(currentPos - targetPos);
         
         // play around with error
@@ -106,6 +107,7 @@ public class CoralSubsystem extends SubsystemBase {
     
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("Coral/Wrist PID output", pidOutput);
         SmartDashboard.putNumber("Coral/Raw Wrist Position", TBEncoder.getPosition());
         SmartDashboard.putNumber("Coral/Raw Wrist Velocity", TBEncoder.getVelocity());
         SmartDashboard.putNumber("Coral/output power ", outputPower);
