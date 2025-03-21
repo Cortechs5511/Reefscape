@@ -57,14 +57,16 @@ public class AlignToReefTagRelative extends Command {
       this.dontSeeTagTimer.reset();
 
       double[] postions = LimelightHelpers.getBotPose_TargetSpace("limelight-sublime");
-      SmartDashboard.putNumber("test/x", postions[2]);
+      SmartDashboard.putNumber("test/x pos", postions[2]);
 
       double xSpeed = xController.calculate(postions[2]);
       SmartDashboard.putNumber("test/xspee", xSpeed);
       double ySpeed = -yController.calculate(postions[0]);
+      SmartDashboard.putNumber("test/y pos", postions[0]);
       double rotValue = -rotController.calculate(postions[4]);
+      SmartDashboard.putNumber("test/rot pos", postions[4]);
 
-      swerve.drive(xSpeed, ySpeed, rotValue, true, false, false);
+      swerve.drive(xSpeed * 35 , ySpeed * 35, rotValue, true, true, false);
 
       if (!rotController.atSetpoint() ||
           !yController.atSetpoint() ||

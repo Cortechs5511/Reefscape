@@ -78,7 +78,7 @@ public final class Constants {
     // approaching values
     public static final double SLOWED_POWER_UP = 0.05;
     public static final double SLOWED_POWER_DOWN = 0.075;
-    public static final double [] ELEVATOR_PID_VALUES = {1.2, 0.0, 0.0};
+    public static final double [] ELEVATOR_PID_VALUES = {1.3, 0, 0.0};
     public static final double ERROR_TOLERANCE = 0.05;
 
 
@@ -149,25 +149,17 @@ public final class Constants {
   }
 
   public static class LimelightConstants {
-    public static final double X_SETPOINT_REEF_ALIGNMENT = 2;
-    public static final double Y_SETPOINT_REEF_ALIGNMENT = 2;
-    public static final double ROT_SETPOINT_REEF_ALIGNMENT = 0.0;
+    public static final double X_SETPOINT_REEF_ALIGNMENT = -.35;
+    public static final double Y_SETPOINT_REEF_ALIGNMENT = .05;
+    public static final double ROT_SETPOINT_REEF_ALIGNMENT = 0;
 
-    public static final double X_TOLERANCE_REEF_ALIGNMENT = 0.1;
-    public static final double Y_TOLERANCE_REEF_ALIGNMENT = 0.1;
-    public static final double ROT_TOLERANCE_REEF_ALIGNMENT = 2.5;
+    public static final double X_TOLERANCE_REEF_ALIGNMENT = 0.05;
+    public static final double Y_TOLERANCE_REEF_ALIGNMENT = 0.03 ;
+    public static final double ROT_TOLERANCE_REEF_ALIGNMENT = 3;
 
-    public static final double X_SETPOINT_CUBE_ALIGNMENT = 0.0;
-    public static final double Y_SETPOINT_CUBE_ALIGNMENT = 0.0;
-    public static final double ROT_SETPOINT_CUBE_ALIGNMENT = 0.0;
-
-    public static final double X_TOLERANCE_CUBE_ALIGNMENT = 0.1;
-    public static final double Y_TOLERANCE_CUBE_ALIGNMENT = 0.1;
-    public static final double ROT_TOLERANCE_CUBE_ALIGNMENT = 2.5;
-
-    public static final double X_REEF_ALIGNMENT_P = 0.7;
-    public static final double Y_REEF_ALIGNMENT_P = 0.7;
-    public static final double ROT_REEF_ALIGNMENT_P = 0.7;
+    public static final double X_REEF_ALIGNMENT_P = 0.8;
+    public static final double Y_REEF_ALIGNMENT_P = 0.8;
+    public static final double ROT_REEF_ALIGNMENT_P = 0.3;
 
     public static final double DONT_SEE_TAG_WAIT_TIME = .5; // seconds
     public static final double POSE_VALIDATION_TIME = 0.4; // seconds

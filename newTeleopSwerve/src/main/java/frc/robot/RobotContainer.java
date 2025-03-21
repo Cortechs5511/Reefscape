@@ -56,7 +56,7 @@ public class RobotContainer {
   public RobotContainer() {
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("taxi", new SequentialCommandGroup (new taxiAuto (m_swerveSubsystem, m_coral, m_elevator)));
-    autoChooser.addOption("l2", new SequentialCommandGroup (new l1auto (m_swerveSubsystem, m_coral, m_elevator)));
+    autoChooser.addOption("l  2", new SequentialCommandGroup (new l1auto (m_swerveSubsystem, m_coral, m_elevator)));
 
     SmartDashboard.putData("Auto chooser", autoChooser);
     // Configure the trigger bindings
@@ -82,10 +82,7 @@ public class RobotContainer {
     // cancelling on release. 
     
     // limelight stuff
-    m_driverController.a().whileTrue(new alignLimelight(m_swerveSubsystem));
-    m_driverController.b().whileTrue(new alignLimelightDist(m_swerveSubsystem));
-    m_driverController.y().whileTrue(new alignLimelightAngle(m_swerveSubsystem));
-    // m_driverController.y().whileTrue(new AlignToReefTagRelative(true, m_swerveSubsystem));
+    m_driverController.a().whileTrue(new AlignToReefTagRelative(true, m_swerveSubsystem));
 
 
     // driving position (bottom) 
@@ -95,7 +92,7 @@ public class RobotContainer {
     // l3
     m_operatorController.b().whileTrue(new setWristPosition(m_coral, 0.625)).whileTrue(new setElevatorPosition(m_elevator, 1.8, false));
     // l4 wrist
-    m_operatorController.y().whileTrue(new setWristPosition(m_coral, 0.55));
+    m_operatorController.y().whileTrue(new setWristPosition(m_coral, 0.56));
     // l4 elevator
     m_operatorController.leftStick().whileTrue(new setElevatorPosition(m_elevator, 3.55, false));
     // intake
