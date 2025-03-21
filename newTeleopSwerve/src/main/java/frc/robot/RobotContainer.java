@@ -21,7 +21,9 @@ import frc.robot.commands.Coral.setCoralPower;
 import frc.robot.commands.Coral.setWristPosition;
 import frc.robot.commands.Elevator.setElevatorPosition;
 import frc.robot.commands.Elevator.setElevatorPower;
+import frc.robot.commands.Swerve.AlignToReefTagRelative;
 import frc.robot.commands.Swerve.alignLimelight;
+import frc.robot.commands.Swerve.alignLimelightAngle;
 import frc.robot.commands.Swerve.alignLimelightDist;
 import frc.robot.commands.Swerve.swerveDrive;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -79,13 +81,17 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release. 
     
+    // limelight stuff
     m_driverController.a().whileTrue(new alignLimelight(m_swerveSubsystem));
     m_driverController.b().whileTrue(new alignLimelightDist(m_swerveSubsystem));
+    m_driverController.y().whileTrue(new alignLimelightAngle(m_swerveSubsystem));
+    // m_driverController.y().whileTrue(new AlignToReefTagRelative(true, m_swerveSubsystem));
+
 
     // driving position (bottom) 
     m_operatorController.a().whileTrue(new setWristPosition(m_coral, 0.405)).whileTrue(new setElevatorPosition(m_elevator, 0, false));
     // l2
-    m_operatorController.x().whileTrue(new setWristPosition(m_coral, 0.595)).whileTrue(new setElevatorPosition(m_elevator, 0, false));
+    m_operatorController.x().whileTrue(new setWristPosition(m_coral, 0.6)).whileTrue(new setElevatorPosition(m_elevator, 0, false));
     // l3
     m_operatorController.b().whileTrue(new setWristPosition(m_coral, 0.625)).whileTrue(new setElevatorPosition(m_elevator, 1.8, false));
     // l4 wrist

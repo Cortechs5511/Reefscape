@@ -2,7 +2,6 @@ package frc.robot.commands.Auto;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.LimelightHelpers.RawFiducial;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;

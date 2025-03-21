@@ -41,8 +41,8 @@ public final class Constants {
     public static final double PASSIVE_FALL_BOT = .8; // position where we no longer need a passive boost to prevent wrist from falling
     public static final double PASSIVE_POWER = .01;
     public static final double WRIST_MAX_POWER = 0.3;
-    public static final double[] WRIST_PID_VALUES = {5.25, 0.0, 0.0}; // change this when testing
-    public static final double ERROR_TOLERANCE = 0.02;
+    public static final double[] WRIST_PID_VALUES = {5.75, 0.2, 0.0}; // change this when testing
+    public static final double ERROR_TOLERANCE = 0;
     
     public static final double FLYWHEEL_INTAKE_MAX_POWER = 0.5;
     public static final double FLYWHEEL_OUTTAKE_MAX_POWER = -1.0;
@@ -110,7 +110,7 @@ public final class Constants {
     
     
     public static final double[] DRIVE_PID_VALUES = {0.015, 0.0, 0.0};
-    public static final double[] TURN_PID_VALUES = {.7, 0.0, 0.0};
+    public static final double[] TURN_PID_VALUES = {.8, 0.0, 0.001};
 
     public static final double ANGLE_MAX_VELOCITY = 7.0;
     public static final double ANGLE_MAX_ACCELERATION = 30.0;
@@ -146,10 +146,31 @@ public final class Constants {
     // Swerve Module Location Constants
     // each module is Math.sqrt(2) * Units.inchesToMeters(23) away from the center
 
+  }
 
+  public static class LimelightConstants {
+    public static final double X_SETPOINT_REEF_ALIGNMENT = 2;
+    public static final double Y_SETPOINT_REEF_ALIGNMENT = 2;
+    public static final double ROT_SETPOINT_REEF_ALIGNMENT = 0.0;
 
-    // alignment constants 
-    
+    public static final double X_TOLERANCE_REEF_ALIGNMENT = 0.1;
+    public static final double Y_TOLERANCE_REEF_ALIGNMENT = 0.1;
+    public static final double ROT_TOLERANCE_REEF_ALIGNMENT = 2.5;
 
+    public static final double X_SETPOINT_CUBE_ALIGNMENT = 0.0;
+    public static final double Y_SETPOINT_CUBE_ALIGNMENT = 0.0;
+    public static final double ROT_SETPOINT_CUBE_ALIGNMENT = 0.0;
+
+    public static final double X_TOLERANCE_CUBE_ALIGNMENT = 0.1;
+    public static final double Y_TOLERANCE_CUBE_ALIGNMENT = 0.1;
+    public static final double ROT_TOLERANCE_CUBE_ALIGNMENT = 2.5;
+
+    public static final double X_REEF_ALIGNMENT_P = 0.7;
+    public static final double Y_REEF_ALIGNMENT_P = 0.7;
+    public static final double ROT_REEF_ALIGNMENT_P = 0.7;
+
+    public static final double DONT_SEE_TAG_WAIT_TIME = .5; // seconds
+    public static final double POSE_VALIDATION_TIME = 0.4; // seconds
   }
 }
+

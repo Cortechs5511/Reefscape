@@ -81,9 +81,7 @@ public class CoralSubsystem extends SubsystemBase {
         
         // play around with error
         if (error < CoralConstants.ERROR_TOLERANCE) {
-            wristPIDController.setSetpoint(targetPos);
             setWristPower(0);
-
             wristPIDController.setSetpoint(targetPos);
             SmartDashboard.putBoolean("Coral/At Target", true);
         }

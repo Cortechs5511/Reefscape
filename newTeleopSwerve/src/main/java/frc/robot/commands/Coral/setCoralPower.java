@@ -26,7 +26,7 @@ public class setCoralPower extends Command {
         coral.setWristPower(oi.getOperatorRightY() * CoralConstants.WRIST_MAX_POWER);
 
         if (oi.getOperatorRightBumper()) {
-            power = 1.0;
+            power = 75.0;
         } else { 
             power = 0;
         }
