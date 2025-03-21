@@ -24,7 +24,7 @@ public class setElevatorPosition extends Command {
 
     @Override
     public void execute() {
-        elevator.setPosition(targetPosition, inInches);
+        elevator.setPositionPID(targetPosition);
         SmartDashboard.putNumber("OI/Elevator Power", oi.getElevatorPower());
     }
 }

@@ -77,6 +77,12 @@ public class SwerveModule {
         driveMotor.set(driveOutput);
     }
 
+    // var delta = angle.minus(currentAngle);
+    // if (Math.abs(delta.getDegrees()) > 90.0) {
+    //   speedMetersPerSecond *= -1;
+    //   angle = angle.rotateBy(Rotation2d.kPi);
+    // }
+
     public double getVelocity() {
         return driveEncoder.getVelocity();
     }

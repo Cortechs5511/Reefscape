@@ -25,6 +25,8 @@ public class OI {
         return oi;
     }
 
+    
+
     public boolean getOperatorRightBumper() {
         return operatorController.getRightBumperButton();
     }
@@ -189,6 +191,14 @@ public class OI {
 
     public boolean driverY() {
         return driverController.getYButton();
+    }
+
+    public boolean driverStart() {
+        return driverController.getStartButton();
+    }
+
+    public boolean driverBack() {
+        return driverController.getBackButton();
     }
 
     public double getElevatorPower() {

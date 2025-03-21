@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -15,6 +16,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import frc.robot.Constants.ElevatorConstants;
 
 public class Elevator extends SubsystemBase {
+    private final PIDController elevatorPIDController = new PIDController(ElevatorConstants.ELEVATOR_PID_VALUES[0], ElevatorConstants.ELEVATOR_PID_VALUES[1], ElevatorConstants.ELEVATOR_PID_VALUES[2]);
     private final SparkMax elevatorLeft = createElevatorController(ElevatorConstants.ELEVATOR_L_ID, false);
     private final SparkMax elevatorRight = createElevatorController(ElevatorConstants.ELEVATOR_R_ID, true);
 
@@ -27,6 +29,12 @@ public class Elevator extends SubsystemBase {
     private double cumulativeRotations = 0;
     private double previousPos = TBEncoder.getPosition();
     private double changeInPos = 0;
+    private double pidOutput = 0;
+
+    public Elevator() {
+        // tolerance for when to stop using PID
+        elevatorPIDController.setTolerance(ElevatorConstants.ERROR_TOLERANCE);
+    }
 
 
     public void setPower(double speed) {
@@ -67,6 +75,19 @@ public class Elevator extends SubsystemBase {
         }
     }
 
+    public void setPositionPID(double targetPosition) {
+        double currentPos = getAccumulatedRotations();
+        pidOutput = elevatorPIDController.calculate(currentPos, targetPosition);
+        elevatorLeft.set(pidOutput);
+        elevatorRight.set(pidOutput);
+
+        if (elevatorPIDController.atSetpoint()) {
+            elevatorLeft.set(0);
+            elevatorRight.set(0);
+        }
+    }
+
+    
     private double getAccumulatedRotations() {
         double currentPos = TBEncoder.getPosition();
 
@@ -105,12 +126,13 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("Elevator/Accumulated Position", getAccumulatedRotations());
         SmartDashboard.putNumber("Elevator/Raw Velocity", TBEncoder.getVelocity());
         SmartDashboard.putNumber("Elevator/Relative Velocity", relEncoder.getVelocity());
+        SmartDashboard.putNumber("Elevator/PID Output", pidOutput);
         
-        if (operatorController.getPOV() == 0) {
-            cumulativeRotations = 0;
-        }
-        if (operatorController.getPOV() == 90) { 
-            cumulativeRotations = 2.5; 
-        }
+        // if (operatorController.getPOV() == 0) {
+        //     cumulativeRotations = 0;
+        // }
+        // if (operatorController.getPOV() == 90) { 
+        //     cumulativeRotations = 2.5; 
+        // }
     }
 }

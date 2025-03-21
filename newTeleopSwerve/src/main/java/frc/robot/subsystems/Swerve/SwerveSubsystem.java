@@ -7,6 +7,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -14,6 +15,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,9 +39,11 @@ public class SwerveSubsystem extends SubsystemBase {
     private Field2d field;
 
     private XboxController driveController;
+    private double rotationCmd;
 
     public SwerveSubsystem() {
         gyro = new Gyro();
+
         // Initialize the swerve modulesi
         modules = new SwerveModule[] {
             new SwerveModule(SwerveConstants.IDS[0], SwerveConstants.IDS[1], SwerveConstants.IDS[2]),
@@ -121,96 +125,169 @@ public class SwerveSubsystem extends SubsystemBase {
         }
     }
 
-    // limelight stuff
-    private RawFiducial[] getLimelightData() {
-        RawFiducial[] fiducials = LimelightHelpers.getRawFiducials("limelight-sublime");
-        for (RawFiducial fiducial : fiducials) {
-            int id = fiducial.id;                    // Tag ID
-            double txnc = fiducial.txnc;             // X offset (no crosshair)
-            double tync = fiducial.tync;             // Y offset (no crosshair)
-            double ta = fiducial.ta;                 // Target area
-            double distToCamera = fiducial.distToCamera;  // Distance to camera
-            double distToRobot = fiducial.distToRobot;    // Distance to robot
-            double ambiguity = fiducial.ambiguity;   // Tag pose ambiguity
-    };
-    return fiducials;
-    }
-
-    public double limelightAlignStrafe() {
-        double currentTx = 0 ; 
-        RawFiducial[] limelightData  = getLimelightData();
-
-        if (limelightData.length == 0) {
-            return 0;
-        }
-    
-        for (int i = 0; i < limelightData.length; i++) {
-            RawFiducial currentEntry = limelightData[i];
-            currentTx = currentEntry.txnc;
-            // System.out.println(currentTx);
-        }
-
-        double strafeSpeed = 0.75 * -(currentTx - 11);
-
-
-        if (Math.abs(strafeSpeed) <= 2) {
-            if (strafeSpeed > 0) {
-                strafeSpeed = (currentTx <= 13.2) ? 1 : 2;
-            } else {
-                strafeSpeed = (currentTx >= 10.2) ? -1 : -2;
+        private double getDesiredYawForTag(int tagID) {
+            switch (tagID) { 
+                // case 6:   
+                case 17:
+                case 7:
+                case 18:
+                    return Math.toRadians(-15);
+        
+                case 6:
+                case 19:
+                    return Math.toRadians(60);
+        
+                case 11:
+                case 20:
+                    return Math.toRadians(120);
+        
+                case 10:
+                case 21:
+                    return Math.toRadians(180);
+        
+                case 9:
+                case 22:
+                    return Math.toRadians(-120);
+        
+                case 8:
+                // case 17:
+                    return Math.toRadians(-60);
+        
+                default:
+                    return Math.toRadians(0);
             }
         }
-    
-        if (11.2 <= currentTx && currentTx <= 12.2)  {
-            strafeSpeed = 0;
+
+        // limelight stuff
+        public RawFiducial[] getLimelightData() {
+            RawFiducial[] fiducials = LimelightHelpers.getRawFiducials("limelight-sublime");
+        return fiducials;
         }
 
-        return strafeSpeed;
-    }
+        public double alignAngle() {
+            RawFiducial[] limelightData = getLimelightData();
+            if (limelightData.length == 0) {
+                return 0.0;
+            }
+            
+            PIDController alignLimelightPidController = new PIDController(10, 0, 0);
 
-    public double limelightAlignDrive() {
-        double speed = -5;
-        double currentTa = 0; 
-        int id = 0; 
-        // double limelightMountAngleDegrees = 0.0; 
-        // double limelightLensHeightInches = 8;
-        // double goalHeightInches = 9.5; 
+            int tagID = limelightData[limelightData.length-1].id;
+        
+            double desiredYaw = getDesiredYawForTag(tagID); 
 
-        RawFiducial[] limelightData  = getLimelightData();
-        for (int i = 0; i < limelightData.length; i++) {
-            RawFiducial currentEntry = limelightData[i];
-            currentTa = currentEntry.ta;
-            id = currentEntry.id;
+            double currentYaw = gyro.getRotation2d().getRadians();
+            
+            rotationCmd = alignLimelightPidController.calculate(currentYaw, desiredYaw);
+
+            rotationCmd *= 8;
+            
+            return rotationCmd;
         }
 
-        if (id == 0) {
-            return 0;
+        public double limelightAlignStrafe() {
+            double currentTx = 0 ; 
+            RawFiducial[] limelightData  = getLimelightData();
+
+            if (limelightData.length == 0) {
+                return 0;
+            }
+        
+            for (int i = 0; i < limelightData.length; i++) {
+                RawFiducial currentEntry = limelightData[i];
+                currentTx = currentEntry.txnc;
+            }
+
+            double strafeSpeed = -(currentTx - 4.8);
+            
+        //     if (2.1 <= currentTx && currentTx <= 2.6)  {
+        //         return 0.001; 
+        // }
+
+
+            if (Math.abs(strafeSpeed) <= 2) {
+                if (strafeSpeed > 0) {
+                    // strafeSpeed = (currentTx <= 13.2) ? 1 : 2;
+                    strafeSpeed = 2;
+                } else {
+                    // strafeSpeed = (currentTx >= 10.2) ? -1 : -2;
+                    strafeSpeed = -2;
+                }
+            }
+        
+            return strafeSpeed;
         }
 
-        if (currentTa >= 0.25 && currentTa <= 0.29) {
-            return 0;
-        }
-    
-        if (Math.abs(currentTa) <= 0.2) {
-            speed = 2;
-        } else if (Math.abs(currentTa) >= 0.34) {
-            speed = -2;
-        }
-    
-        if (Math.abs(currentTa - 0.27) < 0.35) {
-            speed = (speed > 0) ? 0.5 : -0.5;
-        }
-    
-        return speed;
+        public double limelightAlignDrive() {
+            double speed = -5;
+            double currentTa = 0; 
+            int id = 0; 
+            // double limelightMountAngleDegrees = 0.0; 
+            // double limelightLensHeightInches = 8;
+            // double goalHeightInches = 9.5; 
 
-        // double angleToGoalDegrees = limelightMountAngleDegrees + currentTy;
-        // double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
+            RawFiducial[] limelightData  = getLimelightData();
+            for (int i = 0; i < limelightData.length; i++) {
+                RawFiducial currentEntry = limelightData[i];
+                currentTa = currentEntry.ta;
+                id = currentEntry.id;
+            }
 
-        // double distanceFromLimelightToGoalInches = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
+            if (id == 0) {
+                return 0;
+            }
 
-        // System.out.println("Distance from limelight: " + distanceFromLimelightToGoalInches);
-        // System.out.println("Angle: " + currentTy);
-    }
+            speed =  100 * -(currentTa - .155);
+            // not sure best value for ta right now 
+            if (currentTa >= .155 && currentTa <= 0.17) {
+                return 0;
+            }
+        
+            if (Math.abs(speed) <= 2) {
+                if (speed > 0) {
+                    // speed = (currentTx <= 13.2) ? 1 : 2;
+                    speed = 2;
+                } else {
+                    // speed = (currentTx >= 10.2) ? -1 : -2;
+                    speed = -2;
+                }
+            }
+        
+            return speed;
+        }
+
+        public boolean txIsAligned() { 
+            double currentTx = 0 ; 
+            RawFiducial[] limelightData  = getLimelightData();
+            for (int i = 0; i < limelightData.length; i++) {
+                RawFiducial currentEntry = limelightData[i];
+                currentTx = currentEntry.txnc;
+            }  
+            return (currentTx > 4.6 && currentTx < 5);
+        }
+
+        public boolean taIsAligned() { 
+            double currentTa = 0 ; 
+            RawFiducial[] limelightData  = getLimelightData();
+            for (int i = 0; i < limelightData.length; i++) {
+                RawFiducial currentEntry = limelightData[i];
+                currentTa = currentEntry.ta;
+            }   
+            return (currentTa > .155 && currentTa < .18);
+        }
+
+        public boolean angleIsAligned() {
+            int id = 0;
+            RawFiducial[] limelightData  = getLimelightData();
+            for (int i = 0; i < limelightData.length; i++) {
+                RawFiducial currentEntry = limelightData[i];
+                id = currentEntry.id;
+            }   
+
+            double desiredAngle = getDesiredYawForTag(id);
+
+            return Math.abs(desiredAngle - gyro.getRotation2d().getRadians()) <= 0.005;
+        }
 
     @Override 
     public void periodic () {
@@ -223,9 +300,26 @@ public class SwerveSubsystem extends SubsystemBase {
             currentTx = currentEntry.txnc;
         }   
         SmartDashboard.putNumber("Limelight/TX", currentTx);
-        SmartDashboard.putBoolean("Limelight/TX Aligned", (currentTx > 11 && currentTx < 12.2));
+        SmartDashboard.putBoolean("Limelight/TX Aligned", (currentTx > 1.7 && currentTx < 2.9));
         SmartDashboard.putNumber("Limelight/TA", currentTa);
-        SmartDashboard.putBoolean("Limelight/TA Aligned", (currentTa > .249 && currentTa < .305));
+        SmartDashboard.putBoolean("Limelight/TA Aligned", (currentTa > .145 && currentTa < .19));
+        SmartDashboard.putNumber("Limelight/Align Angle", rotationCmd);
+
+        if  (!(currentTa > .249 && currentTa < .305)) { 
+            if (currentTa < .249) {
+                SmartDashboard.putString("Limelight/TA F or B", "Forwards");
+            } else if (currentTa > .305) {
+                SmartDashboard.putString("Limelight/TA F or B", "Backwards");
+            }
+        } else {
+            SmartDashboard.putString("Limelight/TA F or B", "GOOD");
+        }
+        
+
+        SmartDashboard.putString("Limelight/TA Aligned", ((currentTa < .249) ? "Forward" : "backwards"));
+
+
+        
 
 
         odometry.update(gyro.getRotation2d(), getPositions());
@@ -255,7 +349,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
 
-    public void drive(double y, double x, double theta, boolean fieldRelative, boolean alignLimelight, boolean resetPID, boolean resetGyro) {
+    public void drive(double y, double x, double theta, boolean fieldRelative, boolean alignLimelight, boolean resetGyro) {
         ChassisSpeeds newDesiredSpeeds; 
         
         if (alignLimelight) { 
@@ -268,12 +362,6 @@ public class SwerveSubsystem extends SubsystemBase {
         );
         }
 
-        if (resetPID) {
-            for (int i = 0; i < 4; i++) {
-                turnPIDControllers[i].reset(modules[i].getAngle().getRadians(), modules[i].getVelocity());
-                // turnPIDControllers[i].reset();
-            }
-        }
         // reset gyro button
         if (resetGyro) {
             gyro.resetGyro();
@@ -334,6 +422,7 @@ public class SwerveSubsystem extends SubsystemBase {
     //     modules[i].setTargetState(targetStates[i], drivePIDControllers[i], turnPIDControllers[i]);
     //    }
     }
+
 
     public SwerveModuleState[] getStates() {
         SwerveModuleState[] currentStates = {

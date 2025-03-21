@@ -1,18 +1,14 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+// the WPILib BSD license file in the root dirdriveectory of this project.
 
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
-
-import frc.robot.commands.alignLimelight;
-import frc.robot.commands.alignLimelightDist;
-
+import frc.robot.commands.Auto.l1auto;
+import frc.robot.commands.Auto.taxiAuto;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -20,11 +16,16 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.swerveDrive;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.Coral.setCoralPower;
 import frc.robot.commands.Coral.setWristPosition;
 import frc.robot.commands.Elevator.setElevatorPosition;
 import frc.robot.commands.Elevator.setElevatorPower;
+import frc.robot.commands.Swerve.AlignToReefTagRelative;
+import frc.robot.commands.Swerve.alignLimelight;
+import frc.robot.commands.Swerve.alignLimelightAngle;
+import frc.robot.commands.Swerve.alignLimelightDist;
+import frc.robot.commands.Swerve.swerveDrive;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -36,7 +37,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem();
   private final Elevator m_elevator = new Elevator();
   private final CoralSubsystem m_coral = new CoralSubsystem();
@@ -55,6 +55,9 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     autoChooser = AutoBuilder.buildAutoChooser();
+    autoChooser.addOption("taxi", new SequentialCommandGroup (new taxiAuto (m_swerveSubsystem, m_coral, m_elevator)));
+    autoChooser.addOption("l  2", new SequentialCommandGroup (new l1auto (m_swerveSubsystem, m_coral, m_elevator)));
+
     SmartDashboard.putData("Auto chooser", autoChooser);
     // Configure the trigger bindings
     m_swerveSubsystem.setDefaultCommand(new swerveDrive(m_swerveSubsystem));
@@ -78,18 +81,18 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release. 
     
-    m_driverController.a().whileTrue(new alignLimelight(m_swerveSubsystem));
+    // limelight stuff
+    m_driverController.a().whileTrue(new AlignToReefTagRelative(true, m_swerveSubsystem));
 
-    // m_driverController.b().whileTrue(new alignLimelightDist(m_swerveSubsystem));
 
     // driving position (bottom) 
     m_operatorController.a().whileTrue(new setWristPosition(m_coral, 0.405)).whileTrue(new setElevatorPosition(m_elevator, 0, false));
     // l2
-    m_operatorController.x().whileTrue(new setWristPosition(m_coral, 0.595)).whileTrue(new setElevatorPosition(m_elevator, 0, false));
+    m_operatorController.x().whileTrue(new setWristPosition(m_coral, 0.6)).whileTrue(new setElevatorPosition(m_elevator, 0, false));
     // l3
     m_operatorController.b().whileTrue(new setWristPosition(m_coral, 0.625)).whileTrue(new setElevatorPosition(m_elevator, 1.8, false));
     // l4 wrist
-    m_operatorController.y().whileTrue(new setWristPosition(m_coral, 0.55));
+    m_operatorController.y().whileTrue(new setWristPosition(m_coral, 0.56));
     // l4 elevator
     m_operatorController.leftStick().whileTrue(new setElevatorPosition(m_elevator, 3.55, false));
     // intake
