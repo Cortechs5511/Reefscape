@@ -27,7 +27,6 @@ public class setCoralPower extends Command {
 
         if (oi.getOperatorRightBumper()) {
             power = .60;
-            System.out.println(power);
         } else { 
             power = 0;
         }

@@ -39,7 +39,7 @@ public final class Constants {
     public static final double MIN_WRIST_POS = 0.89;
     public static final double PASSIVE_FALL_TOP = .5; // position where the wrist no longer falls down passively
     public static final double PASSIVE_FALL_BOT = .8; // position where we no longer need a passive boost to prevent wrist from falling
-    public static final double PASSIVE_POWER = .01;
+    public static final double PASSIVE_POWER = .03;
     public static final double WRIST_MAX_POWER = 0.3;
     public static final double[] WRIST_PID_VALUES = {5.75, 0.2, 0.0}; // change this when testing
     public static final double ERROR_TOLERANCE = .01;
@@ -154,7 +154,7 @@ public final class Constants {
     public static final double ROT_SETPOINT_REEF_ALIGNMENT = 0;
 
     public static final double X_TOLERANCE_REEF_ALIGNMENT = 0.05;
-    public static final double Y_TOLERANCE_REEF_ALIGNMENT = 0.03 ;
+    public static final double Y_TOLERANCE_REEF_ALIGNMENT = 0.02;
     public static final double ROT_TOLERANCE_REEF_ALIGNMENT = 3;
 
     public static final double X_REEF_ALIGNMENT_P = 0.8;
