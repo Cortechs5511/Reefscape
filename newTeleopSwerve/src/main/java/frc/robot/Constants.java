@@ -162,7 +162,7 @@ public final class Constants {
     public static final double ROT_REEF_ALIGNMENT_P = 0.3;
 
     public static final double DONT_SEE_TAG_WAIT_TIME = .5; // seconds
-    public static final double POSE_VALIDATION_TIME = 0.4; // seconds
+    public static final double POSE_VALIDATION_TIME = 0.3; // seconds
 
     public static final double RIGHT_REEF_TRANSLATION = .05; // meters 
   }

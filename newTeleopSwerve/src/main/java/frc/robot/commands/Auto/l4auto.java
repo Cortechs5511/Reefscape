@@ -16,7 +16,6 @@ public class l4auto extends Command {
     private final SwerveSubsystem m_swerve;
     private final CoralSubsystem m_coral;
     private final Elevator m_elevator;
-    private AlignToReefTagRelative alignCommand;
 
 
     private final Timer timer = new Timer();

@@ -23,9 +23,9 @@ public class Gyro {
          return new Rotation2d(yawRadians);
      }
 
-     public void resetGyro() {
+     public void resetGyro(double degrees) {
          // pigeon.reset();
-         pigeon.setYaw(0);
+         pigeon.setYaw(degrees);
      }
 
  }

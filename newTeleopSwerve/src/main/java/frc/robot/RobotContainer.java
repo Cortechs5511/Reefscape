@@ -8,6 +8,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Auto.l2auto;
 import frc.robot.commands.Auto.l4auto;
 import frc.robot.commands.Auto.taxiAuto;
+import frc.robot.commands.Auto.resetGyro;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
@@ -62,6 +63,7 @@ public class RobotContainer {
     new SequentialCommandGroup(new taxiAuto(m_swerveSubsystem, m_coral, m_elevator),
     new AlignToReefTagRelative(true, m_swerveSubsystem), 
     new l2auto(m_swerveSubsystem, m_coral, m_elevator)
+  // new resetGyro(m_swerveSubsystem, 0)
     ));
     autoChooser.addOption("l4",
     new SequentialCommandGroup(new taxiAuto(m_swerveSubsystem, m_coral, m_elevator),

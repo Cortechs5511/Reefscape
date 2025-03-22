@@ -40,7 +40,7 @@ public class taxiAuto extends Command {
 
     @Override
     public boolean isFinished (){
-        return (m_swerve.detectLimelight() && (m_swerve.getDistanceFromTag() > -.9));
+        return (m_swerve.detectLimelight() && (m_swerve.getDistanceFromTag() > -1.2));
     }
 
 }

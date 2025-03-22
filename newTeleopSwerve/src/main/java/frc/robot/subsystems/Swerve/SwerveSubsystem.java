@@ -299,35 +299,16 @@ public class SwerveSubsystem extends SubsystemBase {
             return Math.abs(desiredAngle - gyro.getRotation2d().getRadians()) <= 0.005;
         }
 
+        public void resetGyro(double degrees) { 
+            gyro.resetGyro(degrees);
+        }
+
     @Override 
     public void periodic () {
-        double currentTa = 0 ; 
-        double currentTx = 0 ;
-        RawFiducial[] limelightData  = getLimelightData();
-        for (int i = 0; i < limelightData.length; i++) {
-            RawFiducial currentEntry = limelightData[i];
-            currentTa = currentEntry.ta;
-            currentTx = currentEntry.txnc;
-        }   
-        SmartDashboard.putNumber("Limelight/TX", currentTx);
-        SmartDashboard.putBoolean("Limelight/TX Aligned", (currentTx > 1.7 && currentTx < 2.9));
-        SmartDashboard.putNumber("Limelight/TA", currentTa);
-        SmartDashboard.putBoolean("Limelight/TA Aligned", (currentTa > .145 && currentTa < .19));
-        SmartDashboard.putNumber("Limelight/Align Angle", rotationCmd);
-
-        if  (!(currentTa > .249 && currentTa < .305)) { 
-            if (currentTa < .249) {
-                SmartDashboard.putString("Limelight/TA F or B", "Forwards");
-            } else if (currentTa > .305) {
-                SmartDashboard.putString("Limelight/TA F or B", "Backwards");
-            }
-        } else {
-            SmartDashboard.putString("Limelight/TA F or B", "GOOD");
-        }
-        
-
-        SmartDashboard.putString("Limelight/TA Aligned", ((currentTa < .249) ? "Forward" : "backwards"));
-
+        double[] postions = LimelightHelpers.getBotPose_TargetSpace("limelight-sublime");
+        SmartDashboard.putNumber("limelight/x pos", postions[2]);
+        SmartDashboard.putNumber("limelight/y pos", postions[0]);
+        SmartDashboard.putNumber("limelight/rot pos", postions[4]);
 
         
 
@@ -374,7 +355,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
         // reset gyro button
         if (resetGyro) {
-            gyro.resetGyro();
+            gyro.resetGyro(0);
         }
 
         // implementing field logic
