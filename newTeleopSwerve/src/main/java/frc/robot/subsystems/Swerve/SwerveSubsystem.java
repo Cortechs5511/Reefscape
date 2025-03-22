@@ -164,6 +164,16 @@ public class SwerveSubsystem extends SubsystemBase {
         return fiducials;
         }
 
+        public boolean detectLimelight () { 
+            return LimelightHelpers.getTV("limelight-sublime");
+        }
+
+        public double getDistanceFromTag () {
+            double[] postions = LimelightHelpers.getBotPose_TargetSpace("limelight-sublime");
+            System.out.println(postions[2]);
+            return postions[2];
+        }
+
         public double alignAngle() {
             RawFiducial[] limelightData = getLimelightData();
             if (limelightData.length == 0) {

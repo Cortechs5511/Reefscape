@@ -42,7 +42,7 @@ public final class Constants {
     public static final double PASSIVE_POWER = .01;
     public static final double WRIST_MAX_POWER = 0.3;
     public static final double[] WRIST_PID_VALUES = {5.75, 0.2, 0.0}; // change this when testing
-    public static final double ERROR_TOLERANCE = 0;
+    public static final double ERROR_TOLERANCE = .01;
     
     public static final double FLYWHEEL_INTAKE_MAX_POWER = 0.5;
     public static final double FLYWHEEL_OUTTAKE_MAX_POWER = -1.0;
@@ -110,7 +110,7 @@ public final class Constants {
     
     
     public static final double[] DRIVE_PID_VALUES = {0.015, 0.0, 0.0};
-    public static final double[] TURN_PID_VALUES = {.8, 0.0, 0.001};
+    public static final double[] TURN_PID_VALUES = {.73, 0.0, 0};
 
     public static final double ANGLE_MAX_VELOCITY = 7.0;
     public static final double ANGLE_MAX_ACCELERATION = 30.0;
@@ -163,6 +163,8 @@ public final class Constants {
 
     public static final double DONT_SEE_TAG_WAIT_TIME = .5; // seconds
     public static final double POSE_VALIDATION_TIME = 0.4; // seconds
+
+    public static final double RIGHT_REEF_TRANSLATION = .05; // meters 
   }
 }
 

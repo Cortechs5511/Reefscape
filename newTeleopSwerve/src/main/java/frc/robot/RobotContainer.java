@@ -5,7 +5,8 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Auto.l1auto;
+import frc.robot.commands.Auto.l2auto;
+import frc.robot.commands.Auto.l4auto;
 import frc.robot.commands.Auto.taxiAuto;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.Elevator;
@@ -25,6 +26,7 @@ import frc.robot.commands.Swerve.AlignToReefTagRelative;
 import frc.robot.commands.Swerve.alignLimelight;
 import frc.robot.commands.Swerve.alignLimelightAngle;
 import frc.robot.commands.Swerve.alignLimelightDist;
+import frc.robot.commands.Swerve.alignToRightReef;
 import frc.robot.commands.Swerve.swerveDrive;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -56,7 +58,16 @@ public class RobotContainer {
   public RobotContainer() {
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("taxi", new SequentialCommandGroup (new taxiAuto (m_swerveSubsystem, m_coral, m_elevator)));
-    autoChooser.addOption("l  2", new SequentialCommandGroup (new l1auto (m_swerveSubsystem, m_coral, m_elevator)));
+    autoChooser.addOption("l2",
+    new SequentialCommandGroup(new taxiAuto(m_swerveSubsystem, m_coral, m_elevator),
+    new AlignToReefTagRelative(true, m_swerveSubsystem), 
+    new l2auto(m_swerveSubsystem, m_coral, m_elevator)
+    ));
+    autoChooser.addOption("l4",
+    new SequentialCommandGroup(new taxiAuto(m_swerveSubsystem, m_coral, m_elevator),
+    new AlignToReefTagRelative(true, m_swerveSubsystem), 
+    new l4auto(m_swerveSubsystem, m_coral, m_elevator)
+    ));
 
     SmartDashboard.putData("Auto chooser", autoChooser);
     // Configure the trigger bindings
@@ -83,6 +94,7 @@ public class RobotContainer {
     
     // limelight stuff
     m_driverController.a().whileTrue(new AlignToReefTagRelative(true, m_swerveSubsystem));
+    m_driverController.b().whileTrue(new alignToRightReef(m_swerveSubsystem));
 
 
     // driving position (bottom) 
