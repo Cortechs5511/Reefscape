@@ -5,8 +5,11 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Auto.l1auto;
+import frc.robot.commands.Auto.AlignToReefAuto;
+import frc.robot.commands.Auto.l2auto;
+import frc.robot.commands.Auto.l4auto;
 import frc.robot.commands.Auto.taxiAuto;
+import frc.robot.commands.Auto.resetGyro;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
@@ -25,6 +28,7 @@ import frc.robot.commands.Swerve.AlignToReefTagRelative;
 import frc.robot.commands.Swerve.alignLimelight;
 import frc.robot.commands.Swerve.alignLimelightAngle;
 import frc.robot.commands.Swerve.alignLimelightDist;
+import frc.robot.commands.Swerve.alignToRightReef;
 import frc.robot.commands.Swerve.swerveDrive;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -56,7 +60,17 @@ public class RobotContainer {
   public RobotContainer() {
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("taxi", new SequentialCommandGroup (new taxiAuto (m_swerveSubsystem, m_coral, m_elevator)));
-    autoChooser.addOption("l  2", new SequentialCommandGroup (new l1auto (m_swerveSubsystem, m_coral, m_elevator)));
+    autoChooser.addOption("l2",
+    new SequentialCommandGroup(new taxiAuto(m_swerveSubsystem, m_coral, m_elevator),
+    new AlignToReefAuto(true, m_swerveSubsystem), 
+    new l2auto(m_swerveSubsystem, m_coral, m_elevator)
+  // new resetGyro(m_swerveSubsystem, 0)
+    ));
+    autoChooser.addOption("l4",
+    new SequentialCommandGroup(new taxiAuto(m_swerveSubsystem, m_coral, m_elevator),
+    new AlignToReefAuto(true, m_swerveSubsystem), 
+    new l4auto(m_swerveSubsystem, m_coral, m_elevator)
+    ));
 
     SmartDashboard.putData("Auto chooser", autoChooser);
     // Configure the trigger bindings
@@ -83,6 +97,7 @@ public class RobotContainer {
     
     // limelight stuff
     m_driverController.a().whileTrue(new AlignToReefTagRelative(true, m_swerveSubsystem));
+    m_driverController.b().whileTrue(new alignToRightReef(m_swerveSubsystem));
 
 
     // driving position (bottom) 
@@ -90,9 +105,9 @@ public class RobotContainer {
     // l2
     m_operatorController.x().whileTrue(new setWristPosition(m_coral, 0.6)).whileTrue(new setElevatorPosition(m_elevator, 0, false));
     // l3
-    m_operatorController.b().whileTrue(new setWristPosition(m_coral, 0.625)).whileTrue(new setElevatorPosition(m_elevator, 1.8, false));
+    m_operatorController.b().whileTrue(new setWristPosition(m_coral, 0.645)).whileTrue(new setElevatorPosition(m_elevator, 1.8, false));
     // l4 wrist
-    m_operatorController.y().whileTrue(new setWristPosition(m_coral, 0.56));
+    m_operatorController.y().whileTrue(new setWristPosition(m_coral, 0.595));
     // l4 elevator
     m_operatorController.leftStick().whileTrue(new setElevatorPosition(m_elevator, 3.55, false));
     // intake

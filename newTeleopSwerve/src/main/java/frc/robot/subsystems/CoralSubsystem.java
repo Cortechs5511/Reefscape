@@ -87,6 +87,10 @@ public class CoralSubsystem extends SubsystemBase {
         }
     }
 
+    public boolean atWristPos (double targetPos) { 
+        double error = Math.abs(TBEncoder.getPosition() - targetPos);
+        return (error < CoralConstants.ERROR_TOLERANCE);
+    }
 
     private SparkMax createCoralController(int port, boolean isInverted) {
         SparkMax controller = new SparkMax(port, MotorType.kBrushless);

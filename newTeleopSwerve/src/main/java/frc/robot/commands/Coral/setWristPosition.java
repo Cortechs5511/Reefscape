@@ -26,4 +26,9 @@ public class setWristPosition extends Command {
         coral.setWristPosPID(targetPosition);
         SmartDashboard.putNumber("OI/Elevator Power", oi.getElevatorPower());
     }
+
+    @Override 
+    public boolean isFinished() { 
+        return coral.atWristPos(targetPosition);
+    }
 }

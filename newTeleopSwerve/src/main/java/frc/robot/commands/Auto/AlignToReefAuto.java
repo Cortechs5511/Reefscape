@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.Swerve;
+package frc.robot.commands.Auto;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -14,14 +14,14 @@ import frc.robot.LimelightHelpers;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
-public class AlignToReefTagRelative extends Command {
+public class AlignToReefAuto extends Command {
   private PIDController xController, yController, rotController;
   private boolean isRightScore;
-  private Timer dontSeeTagTimer, stopTimer;
+  private Timer dontSeeTagTimer, stopTimer, cutoffTimer;
   private SwerveSubsystem swerve;
   private double tagID = -1;
 
-  public AlignToReefTagRelative(boolean isRightScore, SwerveSubsystem subsystem) {
+  public AlignToReefAuto(boolean isRightScore, SwerveSubsystem subsystem) {
     xController = new PIDController(LimelightConstants.X_REEF_ALIGNMENT_P, 0.0, 0);  // Vertical movement
     yController = new PIDController(LimelightConstants.Y_REEF_ALIGNMENT_P, 0.0, 0);  // Horitontal movement
     rotController = new PIDController(LimelightConstants.ROT_REEF_ALIGNMENT_P, 0, 0);  // Rotation
@@ -36,6 +36,9 @@ public class AlignToReefTagRelative extends Command {
     this.stopTimer.start();
     this.dontSeeTagTimer = new Timer();
     this.dontSeeTagTimer.start();
+
+    this.cutoffTimer = new Timer();
+    this.cutoffTimer.start();
 
     rotController.setSetpoint(LimelightConstants.ROT_SETPOINT_REEF_ALIGNMENT);
     rotController.setTolerance(LimelightConstants.ROT_TOLERANCE_REEF_ALIGNMENT);
@@ -66,7 +69,7 @@ public class AlignToReefTagRelative extends Command {
       double rotValue = -rotController.calculate(postions[4]);
       SmartDashboard.putNumber("test/rot pos", postions[4]);
 
-      swerve.drive(xSpeed * 35 , ySpeed * 35, rotValue, false, true, false);
+      swerve.drive(xSpeed * 35 , ySpeed * 35, rotValue, true, true, false);
 
       if (!rotController.atSetpoint() ||
           !yController.atSetpoint() ||
@@ -87,8 +90,7 @@ public class AlignToReefTagRelative extends Command {
 
   @Override
   public boolean isFinished() {
-    // Requires the robot to stay in the correct position for 0.3 seconds, as long as it gets a tag in the camera
     return this.dontSeeTagTimer.hasElapsed(LimelightConstants.DONT_SEE_TAG_WAIT_TIME) ||
-        stopTimer.hasElapsed(LimelightConstants.POSE_VALIDATION_TIME);
+        stopTimer.hasElapsed(LimelightConstants.POSE_VALIDATION_TIME) || cutoffTimer.hasElapsed(LimelightConstants.CUTOFF_TIME_AUTO);
   }
 }

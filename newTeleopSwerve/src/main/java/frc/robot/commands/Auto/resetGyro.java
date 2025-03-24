@@ -11,41 +11,40 @@ import frc.robot.commands.Swerve.alignLimelight;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
+import frc.robot.subsystems.Swerve.Gyro;
 
-public class l4auto extends Command {
+public class resetGyro extends Command {
     private final SwerveSubsystem m_swerve;
-    private final CoralSubsystem m_coral;
-    private final Elevator m_elevator;
+    private double angle = 0 ; 
+    private boolean gyroIsReset = false; 
 
 
     private final Timer timer = new Timer();
 
-    public l4auto(SwerveSubsystem swerve, CoralSubsystem coral, Elevator elevator) {
+    public resetGyro(SwerveSubsystem swerve, double offset) {
         this.m_swerve = swerve;
-        this.m_coral = coral;
-        this.m_elevator = elevator;
-        addRequirements(swerve, coral, elevator);
+        this.angle = offset;
+        addRequirements(swerve);
     }
 
     @Override
     public void initialize() {
         timer.reset();
         timer.start();
+        gyroIsReset = false; 
     }
+
 
     @Override
     public void execute() {
-        m_coral.setWristPosPID(.595);
-        m_elevator.setPositionPID(3.55);
-
-        if (timer.hasElapsed(3) && !timer.hasElapsed((3.5))) {
-            m_coral.setFlywheelPower(0, 1.0);
-        } else if (timer.hasElapsed(3.5)) { 
-            m_coral.setFlywheelPower(0, 0);
-            m_coral.setWristPosPID (.405);
-            m_elevator.setPositionPID(0);
+        if (timer.hasElapsed(.1) && !gyroIsReset) { 
+            m_swerve.resetGyro(angle);
+            gyroIsReset = true;
         }
-        
-        
+    }
+
+    @Override
+    public boolean isFinished() {
+        return gyroIsReset;
     }
 }
