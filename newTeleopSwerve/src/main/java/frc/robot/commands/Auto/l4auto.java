@@ -35,10 +35,10 @@ public class l4auto extends Command {
 
     @Override
     public void execute() {
-        m_coral.setWristPosPID(.56);
+        m_coral.setWristPosPID(.595);
         m_elevator.setPositionPID(3.55);
 
-        if (timer.hasElapsed(2.5) && !timer.hasElapsed((3.5))) {
+        if (timer.hasElapsed(3) && !timer.hasElapsed((3.5))) {
             m_coral.setFlywheelPower(0, 1.0);
         } else if (timer.hasElapsed(3.5)) { 
             m_coral.setFlywheelPower(0, 0);

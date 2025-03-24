@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class alignToRightReef extends Command{
     private PIDController driveController; 
@@ -24,20 +25,23 @@ public class alignToRightReef extends Command{
 
     @Override
     public void initialize() {
-        currentPose = swerve.getPose(); 
-        targetPose = currentPose.plus(new Transform2d(0.0, LimelightConstants.RIGHT_REEF_TRANSLATION, new Rotation2d())); // add 0.05 meters to the right
-        
-        driveController.setSetpoint(targetPose.getTranslation().getY());
-        driveController.setTolerance(LimelightConstants.Y_TOLERANCE_REEF_ALIGNMENT);
+        timer = new Timer(); 
+        timer.start();
     }
 
     @Override
     public void execute() {
-        Pose2d currentPose = swerve.getPose();
+        if (!timer.hasElapsed(.3)) {
+            swerve.drive(0, -.01, 0, false, true, false);
+        } else {
+            swerve.drive(0, -15, 0, false, true, false);
 
-        double ySpeed = driveController.calculate(currentPose.getTranslation().getY());
-
-        swerve.drive(0.0, ySpeed, 0.0, false, false,false);
+        }
     }
 
+
+    @Override 
+    public boolean isFinished ( ) { 
+        return (timer.hasElapsed(.95));
+    }
 }

@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.Auto.AlignToReefAuto;
 import frc.robot.commands.Auto.l2auto;
 import frc.robot.commands.Auto.l4auto;
 import frc.robot.commands.Auto.taxiAuto;
@@ -61,13 +62,13 @@ public class RobotContainer {
     autoChooser.addOption("taxi", new SequentialCommandGroup (new taxiAuto (m_swerveSubsystem, m_coral, m_elevator)));
     autoChooser.addOption("l2",
     new SequentialCommandGroup(new taxiAuto(m_swerveSubsystem, m_coral, m_elevator),
-    new AlignToReefTagRelative(true, m_swerveSubsystem), 
+    new AlignToReefAuto(true, m_swerveSubsystem), 
     new l2auto(m_swerveSubsystem, m_coral, m_elevator)
   // new resetGyro(m_swerveSubsystem, 0)
     ));
     autoChooser.addOption("l4",
     new SequentialCommandGroup(new taxiAuto(m_swerveSubsystem, m_coral, m_elevator),
-    new AlignToReefTagRelative(true, m_swerveSubsystem), 
+    new AlignToReefAuto(true, m_swerveSubsystem), 
     new l4auto(m_swerveSubsystem, m_coral, m_elevator)
     ));
 
@@ -104,9 +105,9 @@ public class RobotContainer {
     // l2
     m_operatorController.x().whileTrue(new setWristPosition(m_coral, 0.6)).whileTrue(new setElevatorPosition(m_elevator, 0, false));
     // l3
-    m_operatorController.b().whileTrue(new setWristPosition(m_coral, 0.625)).whileTrue(new setElevatorPosition(m_elevator, 1.8, false));
+    m_operatorController.b().whileTrue(new setWristPosition(m_coral, 0.645)).whileTrue(new setElevatorPosition(m_elevator, 1.8, false));
     // l4 wrist
-    m_operatorController.y().whileTrue(new setWristPosition(m_coral, 0.56));
+    m_operatorController.y().whileTrue(new setWristPosition(m_coral, 0.595));
     // l4 elevator
     m_operatorController.leftStick().whileTrue(new setElevatorPosition(m_elevator, 3.55, false));
     // intake

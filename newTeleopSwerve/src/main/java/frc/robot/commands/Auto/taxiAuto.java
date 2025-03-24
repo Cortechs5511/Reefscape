@@ -34,13 +34,13 @@ public class taxiAuto extends Command {
             m_coral.setWristPosPID(.405);
         } else if (!timer.hasElapsed(10)){ 
             m_coral.setWristPosPID(.405);
-            m_swerve.drive(15, 0, 0, false, true, false);
+            m_swerve.drive(15, 1, 0, false, true, false);
         }
     }
 
     @Override
     public boolean isFinished (){
-        return (m_swerve.detectLimelight() && (m_swerve.getDistanceFromTag() > -1.2));
+        return (m_swerve.detectLimelight() && (m_swerve.getDistanceFromTag() > -1.5));
     }
 
 }

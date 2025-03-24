@@ -37,9 +37,9 @@ public class l2auto extends Command {
     public void execute() {
         m_coral.setWristPosPID(.6);
 
-        if (timer.hasElapsed(1.0) && !timer.hasElapsed((2))) {
+        if (timer.hasElapsed(2.5) && !timer.hasElapsed((3))) {
             m_coral.setFlywheelPower(0, 1.0);
-        } else if (timer.hasElapsed(2)) { 
+        } else if (timer.hasElapsed(3)) {   
             m_coral.setFlywheelPower(0, 0);
             m_coral.setWristPosPID (.405);
         }
