@@ -32,6 +32,8 @@ public final class Constants {
   public static class CoralConstants {
     public static final int CORAL_FLYWHEEL_ID = 2;
     public static final int CORAL_WRIST_ID = 1;
+    public static final int CORAL_ANGLED_FLYWHEEL_ID = 3;
+
     public static final int THROUGH_BORE_ID = 8;
 
     // MAX and MIN position of wrist

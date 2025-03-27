@@ -20,6 +20,7 @@ public class CoralSubsystem extends SubsystemBase {
 
     private final SparkMax flywheel = createCoralController(CoralConstants.CORAL_FLYWHEEL_ID, true);
     private final SparkMax wrist = createCoralController(CoralConstants.CORAL_WRIST_ID, true);
+    private final SparkMax angledFlywheel = createCoralController(CoralConstants.CORAL_ANGLED_FLYWHEEL_ID, false);
 
     private double pidOutput = 0 ;
 
@@ -35,8 +36,10 @@ public class CoralSubsystem extends SubsystemBase {
         if (outtakePower != 0) {
             outputPower = outtakePower * CoralConstants.FLYWHEEL_OUTTAKE_MAX_POWER;  
             flywheel.set(outputPower);
+            angledFlywheel.set(outputPower);
         } else {
             flywheel.set(intakePower);
+            angledFlywheel.set(intakePower);
             // flywheel.set(intake ? CoralConstants.FLYWHEEL_INTAKE_MAX_POWER : 0);
         }
     }
