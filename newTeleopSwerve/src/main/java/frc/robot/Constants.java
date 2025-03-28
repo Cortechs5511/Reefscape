@@ -37,7 +37,7 @@ public final class Constants {
     public static final int THROUGH_BORE_ID = 8;
 
     // MAX and MIN position of wrist
-    public static final double MAX_WRIST_POS = 0.405;
+    public static final double MAX_WRIST_POS = 0.418;
     public static final double MIN_WRIST_POS = 0.89;
     public static final double PASSIVE_FALL_TOP = .5; // position where the wrist no longer falls down passively
     public static final double PASSIVE_FALL_BOT = .8; // position where we no longer need a passive boost to prevent wrist from falling

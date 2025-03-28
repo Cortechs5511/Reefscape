@@ -36,10 +36,9 @@ public class SwerveSubsystem extends SubsystemBase {
     // Properties for Field oriented driving
     private Gyro gyro;
     private SwerveDriveOdometry odometry;
-    private Field2d field;
+    private Field2d field = new Field2d();
 
     private XboxController driveController;
-    private double rotationCmd;
 
     public SwerveSubsystem() {
         gyro = new Gyro();
@@ -71,21 +70,13 @@ public class SwerveSubsystem extends SubsystemBase {
              new ProfiledPIDController(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION)),
              new ProfiledPIDController(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION))  
         };
-
-        // turnPIDControllers = new PIDController[] {
-        //     new PIDController(SwerveConstants.DRIVE_PID_VALUES[0], SwerveConstants.DRIVE_PID_VALUES[1], SwerveConstants.DRIVE_PID_VALUES[2]),
-        //     new PIDController(SwerveConstants.DRIVE_PID_VALUES[0], SwerveConstants.DRIVE_PID_VALUES[1], SwerveConstants.DRIVE_PID_VALUES[2]),
-        //     new PIDController(SwerveConstants.DRIVE_PID_VALUES[0], SwerveConstants.DRIVE_PID_VALUES[1], SwerveConstants.DRIVE_PID_VALUES[2]),
-        //     new PIDController(SwerveConstants.DRIVE_PID_VALUES[0], SwerveConstants.DRIVE_PID_VALUES[1], SwerveConstants.DRIVE_PID_VALUES[2])
-        // };
-
         for (ProfiledPIDController p : turnPIDControllers) {
             p.enableContinuousInput(0, 2 * Math.PI);
         };
 
-        // For Field driving later 
+        // For Field driving 
         odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), getPositions());
-        field = new Field2d();
+        SmartDashboard.putData("Field", field);
 
         driveController = new XboxController(0);
 
@@ -125,40 +116,7 @@ public class SwerveSubsystem extends SubsystemBase {
         }
     }
 
-        private double getDesiredYawForTag(int tagID) {
-            switch (tagID) { 
-                // case 6:   
-                case 17:
-                case 7:
-                case 18:
-                    return Math.toRadians(-15);
-        
-                case 6:
-                case 19:
-                    return Math.toRadians(60);
-        
-                case 11:
-                case 20:
-                    return Math.toRadians(120);
-        
-                case 10:
-                case 21:
-                    return Math.toRadians(180);
-        
-                case 9:
-                case 22:
-                    return Math.toRadians(-120);
-        
-                case 8:
-                // case 17:
-                    return Math.toRadians(-60);
-        
-                default:
-                    return Math.toRadians(0);
-            }
-        }
-
-        // limelight stuff
+        // get limelight data
         public RawFiducial[] getLimelightData() {
             RawFiducial[] fiducials = LimelightHelpers.getRawFiducials("limelight-sublime");
         return fiducials;
@@ -174,131 +132,6 @@ public class SwerveSubsystem extends SubsystemBase {
             return postions[2];
         }
 
-        public double alignAngle() {
-            RawFiducial[] limelightData = getLimelightData();
-            if (limelightData.length == 0) {
-                return 0.0;
-            }
-            
-            PIDController alignLimelightPidController = new PIDController(10, 0, 0);
-
-            int tagID = limelightData[limelightData.length-1].id;
-        
-            double desiredYaw = getDesiredYawForTag(tagID); 
-
-            double currentYaw = gyro.getRotation2d().getRadians();
-            
-            rotationCmd = alignLimelightPidController.calculate(currentYaw, desiredYaw);
-
-            rotationCmd *= 8;
-            
-            return rotationCmd;
-        }
-
-        public double limelightAlignStrafe() {
-            double currentTx = 0 ; 
-            RawFiducial[] limelightData  = getLimelightData();
-
-            if (limelightData.length == 0) {
-                return 0;
-            }
-        
-            for (int i = 0; i < limelightData.length; i++) {
-                RawFiducial currentEntry = limelightData[i];
-                currentTx = currentEntry.txnc;
-            }
-
-            double strafeSpeed = -(currentTx - 4.8);
-            
-        //     if (2.1 <= currentTx && currentTx <= 2.6)  {
-        //         return 0.001; 
-        // }
-
-
-            if (Math.abs(strafeSpeed) <= 2) {
-                if (strafeSpeed > 0) {
-                    // strafeSpeed = (currentTx <= 13.2) ? 1 : 2;
-                    strafeSpeed = 2;
-                } else {
-                    // strafeSpeed = (currentTx >= 10.2) ? -1 : -2;
-                    strafeSpeed = -2;
-                }
-            }
-        
-            return strafeSpeed;
-        }
-
-        public double limelightAlignDrive() {
-            double speed = -5;
-            double currentTa = 0; 
-            int id = 0; 
-            // double limelightMountAngleDegrees = 0.0; 
-            // double limelightLensHeightInches = 8;
-            // double goalHeightInches = 9.5; 
-
-            RawFiducial[] limelightData  = getLimelightData();
-            for (int i = 0; i < limelightData.length; i++) {
-                RawFiducial currentEntry = limelightData[i];
-                currentTa = currentEntry.ta;
-                id = currentEntry.id;
-            }
-
-            if (id == 0) {
-                return 0;
-            }
-
-            speed =  100 * -(currentTa - .155);
-            // not sure best value for ta right now 
-            if (currentTa >= .155 && currentTa <= 0.17) {
-                return 0;
-            }
-        
-            if (Math.abs(speed) <= 2) {
-                if (speed > 0) {
-                    // speed = (currentTx <= 13.2) ? 1 : 2;
-                    speed = 2;
-                } else {
-                    // speed = (currentTx >= 10.2) ? -1 : -2;
-                    speed = -2;
-                }
-            }
-        
-            return speed;
-        }
-
-        public boolean txIsAligned() { 
-            double currentTx = 0 ; 
-            RawFiducial[] limelightData  = getLimelightData();
-            for (int i = 0; i < limelightData.length; i++) {
-                RawFiducial currentEntry = limelightData[i];
-                currentTx = currentEntry.txnc;
-            }  
-            return (currentTx > 4.6 && currentTx < 5);
-        }
-
-        public boolean taIsAligned() { 
-            double currentTa = 0 ; 
-            RawFiducial[] limelightData  = getLimelightData();
-            for (int i = 0; i < limelightData.length; i++) {
-                RawFiducial currentEntry = limelightData[i];
-                currentTa = currentEntry.ta;
-            }   
-            return (currentTa > .155 && currentTa < .18);
-        }
-
-        public boolean angleIsAligned() {
-            int id = 0;
-            RawFiducial[] limelightData  = getLimelightData();
-            for (int i = 0; i < limelightData.length; i++) {
-                RawFiducial currentEntry = limelightData[i];
-                id = currentEntry.id;
-            }   
-
-            double desiredAngle = getDesiredYawForTag(id);
-
-            return Math.abs(desiredAngle - gyro.getRotation2d().getRadians()) <= 0.005;
-        }
-
         public void resetGyro(double degrees) { 
             gyro.resetGyro(degrees);
         }
@@ -309,9 +142,6 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("limelight/x pos", postions[2]);
         SmartDashboard.putNumber("limelight/y pos", postions[0]);
         SmartDashboard.putNumber("limelight/rot pos", postions[4]);
-
-        
-
 
         odometry.update(gyro.getRotation2d(), getPositions());
         field.setRobotPose(getPose());

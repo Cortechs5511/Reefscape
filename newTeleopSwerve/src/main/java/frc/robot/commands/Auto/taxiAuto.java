@@ -31,10 +31,10 @@ public class taxiAuto extends Command {
     public void execute() {
         if (!timer.hasElapsed(.1)) { 
             m_swerve.drive(.001, 0, 0, false, false, false);
-            m_coral.setWristPosPID(.405);
+            m_coral.setWristPosPID(.412);
         } else if (!timer.hasElapsed(10)){ 
-            m_coral.setWristPosPID(.405);
-            m_swerve.drive(15, 1, 0, false, true, false);
+            m_coral.setWristPosPID(.412);
+            m_swerve.drive(15, -3, 0, false, true, false);
         }
     }
 

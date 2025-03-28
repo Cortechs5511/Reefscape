@@ -223,14 +223,6 @@ public class OI {
         return operatorRightTrigger();
     }
 
-    public double getFeederPower() {
-        if (operatorController.getLeftBumperButton()) {
-            return getOperatorRightY() * 0.5;
-        } else {
-            return getOperatorRightY();
-        }
-
-    }
 
     /**
      * Sets rumble value of controller to specified intensity
