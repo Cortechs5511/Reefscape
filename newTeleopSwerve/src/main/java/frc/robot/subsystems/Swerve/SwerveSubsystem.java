@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Swerve;
 
+import static edu.wpi.first.units.Units.Rotation;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -15,7 +17,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,17 +34,22 @@ public class SwerveSubsystem extends SubsystemBase {
     private final PIDController[] drivePIDControllers;
     private final ProfiledPIDController[] turnPIDControllers;
     // private final PIDController[] turnPIDControllers;
+
     // Properties for Field oriented driving
-    private Gyro gyro;
+    private Gyro fieldGyro;
+    
+    // for resetting gyro
+    private Rotation2d gyroOffset = new Rotation2d();
+
     private SwerveDriveOdometry odometry;
     private Field2d field = new Field2d();
 
     private XboxController driveController;
 
     public SwerveSubsystem() {
-        gyro = new Gyro();
-
-        // Initialize the swerve modulesi
+        fieldGyro = new Gyro();
+        gyroOffset = new Rotation2d();
+        // Initialize the swerve modules
         modules = new SwerveModule[] {
             new SwerveModule(SwerveConstants.IDS[0], SwerveConstants.IDS[1], SwerveConstants.IDS[2]),
             new SwerveModule(SwerveConstants.IDS[3], SwerveConstants.IDS[4], SwerveConstants.IDS[5]),
@@ -75,7 +81,7 @@ public class SwerveSubsystem extends SubsystemBase {
         };
 
         // For Field driving 
-        odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), getPositions());
+        odometry = new SwerveDriveOdometry(kinematics, fieldGyro.getRotation2d(), getPositions());
         SmartDashboard.putData("Field", field);
 
         driveController = new XboxController(0);
@@ -91,7 +97,14 @@ public class SwerveSubsystem extends SubsystemBase {
                 this::getPose, // Robot pose supplier
                 this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                this:: driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+                (speeds, feedforwards) -> drive(
+                speeds.vxMetersPerSecond / SwerveConstants.MAX_TRANSLATIONAL_SPEED,
+                speeds.vyMetersPerSecond / SwerveConstants.MAX_TRANSLATIONAL_SPEED,
+                speeds.omegaRadiansPerSecond / SwerveConstants.MAX_ROTATIONAL_SPEED,
+                false,  // fieldRelative (assuming you want robot relative in auto)
+                false,  // alignLimelight
+                false   // resetGyro
+            ), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
                 new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
                         new PIDConstants(SwerveConstants.DRIVE_PID_VALUES[0], SwerveConstants.DRIVE_PID_VALUES[1], SwerveConstants.DRIVE_PID_VALUES[2]), // Translation PID constants
                         new PIDConstants(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2]) // Rotation PID constants
@@ -133,7 +146,7 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         public void resetGyro(double degrees) { 
-            gyro.resetGyro(degrees);
+            fieldGyro.resetGyro(degrees);
         }
 
     @Override 
@@ -143,8 +156,14 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("limelight/y pos", postions[0]);
         SmartDashboard.putNumber("limelight/rot pos", postions[4]);
 
-        odometry.update(gyro.getRotation2d(), getPositions());
+        // pose stuff 
+        odometry.update(fieldGyro.getRotation2d(), getPositions());
         field.setRobotPose(getPose());
+        Pose2d pose = getPose();
+        SmartDashboard.putNumber("Pose X", pose.getX());
+        SmartDashboard.putNumber("Pose Y", pose.getY());
+        SmartDashboard.putNumber("Pose Rotation", pose.getRotation().getDegrees());
+
         // transfering the controller inputs into SwerveModuleState
         ChassisSpeeds controllerSpeeds = new ChassisSpeeds(
             SwerveConstants.MAX_TRANSLATIONAL_SPEED * -driveController.getLeftY(), 
@@ -185,7 +204,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
         // reset gyro button
         if (resetGyro) {
-            gyro.resetGyro(0);
+            gyroOffset = fieldGyro.getRotation2d();
         }
 
         // implementing field logic
@@ -212,16 +231,18 @@ public class SwerveSubsystem extends SubsystemBase {
         for (int i = 0; i < modules.length; i++) {
             positions[i] = modules[i].getPosition();
         }
-
+        SmartDashboard.putNumber("Swerve/SwerveModule distance", modules[0].getPosition().distanceMeters );
+        SmartDashboard.putNumber("Swerve/SwerveModule degree", modules[0].getPosition().angle.getDegrees() );
         return positions;
-    }
+    } 
 
     public void resetPose(Pose2d pose) {
-        odometry.resetPosition(gyro.getRotation2d(), getPositions(), pose);
+        odometry.resetPosition(fieldGyro.getRotation2d(), getPositions(), pose);
     }
 
     public void driveFieldRelative(ChassisSpeeds fieldRelativeSpeeds) {
-        driveRobotRelative(ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, getPose().getRotation()));
+        Rotation2d drivingAngle = fieldGyro.getRotation2d().minus(gyroOffset);
+        driveRobotRelative(ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, drivingAngle));
     }
 
     public void driveRobotRelative(ChassisSpeeds robotRelativeSpeeds) {
@@ -268,7 +289,7 @@ public class SwerveSubsystem extends SubsystemBase {
         };
         
         SmartDashboard.putNumberArray("Module State", loggingState);
-        SmartDashboard.putNumber("Gyro Radians", gyro.getRotation2d().getRadians());
+        SmartDashboard.putNumber("Gyro Radians", fieldGyro.getRotation2d().getRadians());
 
         SmartDashboard.putNumber("Swerve/FL Velocity", modules[0].getVelocity());
         SmartDashboard.putNumber("Swerve/FR Velocity", modules[1].getVelocity());

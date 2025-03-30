@@ -102,7 +102,7 @@ public class RobotContainer {
     // l3
     m_operatorController.b().whileTrue(new setWristPosition(m_coral, 0.645)).whileTrue(new setElevatorPosition(m_elevator, 1.8, false));
     // l4 wrist
-    m_operatorController.y().whileTrue(new setWristPosition(m_coral, 0.58));
+    m_operatorController.y().whileTrue(new setWristPosition(m_coral, 0.578));
     // l4 elevator
     m_operatorController.leftStick().whileTrue(new setElevatorPosition(m_elevator, 3.55, false));
     // intake

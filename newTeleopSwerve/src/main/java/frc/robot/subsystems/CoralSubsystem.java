@@ -36,7 +36,7 @@ public class CoralSubsystem extends SubsystemBase {
         if (outtakePower != 0) {
             outputPower = outtakePower * CoralConstants.FLYWHEEL_OUTTAKE_MAX_POWER;  
             flywheel.set(outputPower);
-            angledFlywheel.set(outputPower);
+            angledFlywheel.set(outputPower * 1.2);
         } else {
             flywheel.set(intakePower);
             angledFlywheel.set(intakePower);

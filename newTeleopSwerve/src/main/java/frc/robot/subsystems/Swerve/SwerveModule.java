@@ -66,15 +66,27 @@ public class SwerveModule {
     }
 
     public void setTargetState(SwerveModuleState targetState, PIDController drivePID, ProfiledPIDController turnPID) {
+        // get the current states
+        currentState = new SwerveModuleState(getVelocity(), getAngle());
+
+        // get angle + optimize angle 
         Rotation2d currentAngle = getAngle();
         targetState.optimize(currentAngle);
-        // currentState = targetState;
-        currentPosition = new SwerveModulePosition(currentPosition.distanceMeters + (currentState.speedMetersPerSecond * 0.02), currentState.angle);
+
+        // calculate the motor output + set the motor states
         double driveOutput = drivePID.calculate(getVelocity(), targetState.speedMetersPerSecond);
         double turnOutput = turnPID.calculate(getAngle().getRadians(), targetState.angle.getRadians());
         
         turnMotor.set(turnOutput);
         driveMotor.set(driveOutput);
+
+        // set the states 
+        double deltaTime = 0.02;
+        double distanceChange = getVelocity() * deltaTime; 
+        currentPosition = new SwerveModulePosition(
+        currentPosition.distanceMeters + distanceChange,
+        getAngle()
+    );
     }
 
     // var delta = angle.minus(currentAngle);

@@ -29,7 +29,7 @@ public class l4auto extends Command {
 
     @Override
     public void execute() {
-        m_coral.setWristPosPID(.56);
+        m_coral.setWristPosPID(.578);
         m_elevator.setPositionPID(3.55);
 
         if (timer.hasElapsed(4) && !timer.hasElapsed((4.5))) {
