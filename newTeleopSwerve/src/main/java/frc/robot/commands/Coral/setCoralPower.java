@@ -26,9 +26,9 @@ public class setCoralPower extends Command {
         coral.setWristPower(oi.getOperatorRightY() * CoralConstants.WRIST_MAX_POWER);
 
         if (oi.getOperatorRightBumper()) {
-            power = .5;
-        } else { 
-            power = 0;
+            power = .4;
+        } else {
+            power = 0.0;
         }
         coral.setFlywheelPower(power, oi.operatorRightTrigger());
         SmartDashboard.putNumber("OI/Wrist Power", oi.getOperatorRightY());

@@ -98,9 +98,9 @@ public class SwerveSubsystem extends SubsystemBase {
                 this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 (speeds, feedforwards) -> drive(
-                speeds.vxMetersPerSecond / SwerveConstants.MAX_TRANSLATIONAL_SPEED,
-                speeds.vyMetersPerSecond / SwerveConstants.MAX_TRANSLATIONAL_SPEED,
-                speeds.omegaRadiansPerSecond / SwerveConstants.MAX_ROTATIONAL_SPEED,
+                speeds.vxMetersPerSecond,
+                speeds.vyMetersPerSecond,
+                speeds.omegaRadiansPerSecond,
                 false,  // fieldRelative (assuming you want robot relative in auto)
                 false,  // alignLimelight
                 false   // resetGyro
@@ -295,6 +295,8 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Swerve/FR Velocity", modules[1].getVelocity());
         SmartDashboard.putNumber("Swerve/BL Velocity", modules[2].getVelocity());
         SmartDashboard.putNumber("Swerve/BR Velocity", modules[3].getVelocity());
+
+        SmartDashboard.putString("Alliance Color", DriverStation.getAlliance().get().toString());
     }
     
 }

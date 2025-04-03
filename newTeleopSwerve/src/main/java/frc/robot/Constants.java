@@ -37,12 +37,12 @@ public final class Constants {
     public static final int THROUGH_BORE_ID = 8;
 
     // MAX and MIN position of wrist
-    public static final double MAX_WRIST_POS = 0.418;
+    public static final double MAX_WRIST_POS = 0.38;
     public static final double MIN_WRIST_POS = 0.89;
     public static final double PASSIVE_FALL_TOP = .5; // position where the wrist no longer falls down passively
     public static final double PASSIVE_FALL_BOT = .8; // position where we no longer need a passive boost to prevent wrist from falling
     public static final double PASSIVE_POWER = .03;
-    public static final double WRIST_MAX_POWER = 0.3;
+    public static final double WRIST_MAX_POWER = .85;
     public static final double[] WRIST_PID_VALUES = {6, 0.2, 0.0}; // change this when testing
     public static final double ERROR_TOLERANCE = .01;
     
@@ -59,6 +59,26 @@ public final class Constants {
 
     public static final double POWER = 0.1 ;
 
+    public static final double SPIKE_THRESHOLD = .05;
+    public static final double SPIKE_DURATION = 0.0;  
+
+  }
+
+  public static class AlgaeConstants { 
+    public static final int ALGAE_WRIST_ID = 4; 
+    public static final int ALGAE_FLYWHEEL_ID = 5; 
+
+    public static final double ALGAE_WRIST_P = .9; 
+    public static final double ALGAE_WRIST_I = 0.0; 
+    public static final double ALGAE_WRIST_D = 0.0;
+
+    public static final double WRIST_MAX_POWER = .25;
+
+    public static final double VOLTAGE_COMPENSATION = 5;
+    public static final int CURRENT_LIMIT = 40;
+    public static final IdleMode IDLE_MODE = IdleMode.kBrake;
+    public static final double RAMP_RATE = 0.05;
+    
   }
 
   public static class ElevatorConstants {
@@ -80,8 +100,10 @@ public final class Constants {
     // approaching values
     public static final double SLOWED_POWER_UP = 0.05;
     public static final double SLOWED_POWER_DOWN = 0.075;
+    public static final double PASSIVE_POWER = 0.075;
+
     public static final double [] ELEVATOR_PID_VALUES = {1.3, 0, 0.0};
-    public static final double ERROR_TOLERANCE = 0.05;
+    public static final double ERROR_TOLERANCE = 0.03;
 
 
 
@@ -151,21 +173,21 @@ public final class Constants {
   }
 
   public static class LimelightConstants {
-    public static final double X_SETPOINT_REEF_ALIGNMENT = -.35;
-    public static final double Y_SETPOINT_REEF_ALIGNMENT = .045;
+    public static final double X_SETPOINT_REEF_ALIGNMENT = -.28; // .35 for old mech
+    public static final double Y_SETPOINT_REEF_ALIGNMENT = .07; // .045 for old mech
     public static final double ROT_SETPOINT_REEF_ALIGNMENT = 0;
 
     public static final double X_TOLERANCE_REEF_ALIGNMENT = 0.05;
     public static final double Y_TOLERANCE_REEF_ALIGNMENT = 0.01;
     public static final double ROT_TOLERANCE_REEF_ALIGNMENT = 3;
 
-    public static final double X_REEF_ALIGNMENT_P = 0.8;
-    public static final double Y_REEF_ALIGNMENT_P = 0.8;
-    public static final double ROT_REEF_ALIGNMENT_P = 0.3;
+    public static final double X_REEF_ALIGNMENT_P = 1.0; // . 9 worked well
+    public static final double Y_REEF_ALIGNMENT_P = 1.0;  // . 9 worked well
+    public static final double ROT_REEF_ALIGNMENT_P = 0.4;
 
     public static final double DONT_SEE_TAG_WAIT_TIME = .5; // seconds
     public static final double POSE_VALIDATION_TIME = 0.3; // seconds
-    public static final double CUTOFF_TIME_AUTO = 5.5 ; 
+    public static final double CUTOFF_TIME_AUTO = 3; 
 
     public static final double RIGHT_REEF_TRANSLATION = -.1; // meters 
   }
