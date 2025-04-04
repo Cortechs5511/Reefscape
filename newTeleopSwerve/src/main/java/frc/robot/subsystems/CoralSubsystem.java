@@ -1,13 +1,17 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkMax;
@@ -20,6 +24,9 @@ public class CoralSubsystem extends SubsystemBase {
 
     private final SparkMax flywheel = createCoralController(CoralConstants.CORAL_FLYWHEEL_ID, true);
     private final SparkMax wrist = createCoralController(CoralConstants.CORAL_WRIST_ID, true);
+    private final SparkMax angledFlywheel = createCoralController(CoralConstants.CORAL_ANGLED_FLYWHEEL_ID, false);
+
+    private final DigitalInput coralSensor = new DigitalInput(8); 
 
     private double pidOutput = 0 ;
 
@@ -35,11 +42,14 @@ public class CoralSubsystem extends SubsystemBase {
         if (outtakePower != 0) {
             outputPower = outtakePower * CoralConstants.FLYWHEEL_OUTTAKE_MAX_POWER;  
             flywheel.set(outputPower);
+            angledFlywheel.set(outputPower);
+
         } else {
             flywheel.set(intakePower);
+            angledFlywheel.set(intakePower);
             // flywheel.set(intake ? CoralConstants.FLYWHEEL_INTAKE_MAX_POWER : 0);
         }
-    }
+    }  
 
 
     public void setWristPower(double speed) {
@@ -92,6 +102,14 @@ public class CoralSubsystem extends SubsystemBase {
         return (error < CoralConstants.ERROR_TOLERANCE);
     }
 
+    public double getLeftFlywheelCurrent() {
+        return flywheel.getOutputCurrent();
+    }
+
+    public double getRightFlywheelCurrent() {
+        return angledFlywheel.getOutputCurrent();
+    }
+
     private SparkMax createCoralController(int port, boolean isInverted) {
         SparkMax controller = new SparkMax(port, MotorType.kBrushless);
         SparkMaxConfig config = new SparkMaxConfig();
@@ -113,6 +131,9 @@ public class CoralSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Coral/Raw Wrist Position", TBEncoder.getPosition());
         SmartDashboard.putNumber("Coral/Raw Wrist Velocity", TBEncoder.getVelocity());
         SmartDashboard.putNumber("Coral/output power ", outputPower);
+        SmartDashboard.putNumber("Coral/Left Flywheel AMPs", flywheel.getOutputCurrent());
+        SmartDashboard.putNumber("Coral/Right Flywheel AMPs", angledFlywheel.getOutputCurrent());
+        SmartDashboard.putBoolean("Coral/Coral Sensor", coralSensor.get());
         
     }
 }

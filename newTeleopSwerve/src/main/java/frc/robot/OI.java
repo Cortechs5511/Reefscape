@@ -36,9 +36,9 @@ public class OI {
         if (Math.abs(value) < OIConstants.DEADBAND) {
             return 0;
         }
-        if (driverController.getRightBumperButton()) {
+        if (driverController.getRightTriggerAxis() > 0.1) {
             return value * 0.5;
-        } else if (driverController.getLeftBumperButton()) {
+        } else if (driverController.getLeftTriggerAxis() > 0.1) {
             return value * 0.1;
         } else {
             return value;
@@ -66,9 +66,9 @@ public class OI {
         if (Math.abs(value) < OIConstants.DEADBAND) {
             return 0;
         }
-        if (driverController.getRightBumperButton()) {
+        if (driverController.getRightTriggerAxis() > .1) {
             return value * 0.5;
-        } else if (driverController.getLeftBumperButton()) {
+        } else if (driverController.getLeftTriggerAxis() > 0.1) {
             return value * 0.1;
         } else {
             return value;
@@ -223,14 +223,6 @@ public class OI {
         return operatorRightTrigger();
     }
 
-    public double getFeederPower() {
-        if (operatorController.getLeftBumperButton()) {
-            return getOperatorRightY() * 0.5;
-        } else {
-            return getOperatorRightY();
-        }
-
-    }
 
     /**
      * Sets rumble value of controller to specified intensity

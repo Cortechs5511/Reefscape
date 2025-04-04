@@ -5,11 +5,9 @@
 package frc.robot.commands.Auto;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
@@ -17,7 +15,7 @@ import frc.robot.subsystems.Swerve.SwerveSubsystem;
 public class AlignToReefAuto extends Command {
   private PIDController xController, yController, rotController;
   private boolean isRightScore;
-  private Timer dontSeeTagTimer, stopTimer, cutoffTimer;
+  private Timer dontSeeTagTimer, stopTimer, cutoffTimer, timer;
   private SwerveSubsystem swerve;
   private double tagID = -1;
 
@@ -39,6 +37,9 @@ public class AlignToReefAuto extends Command {
 
     this.cutoffTimer = new Timer();
     this.cutoffTimer.start();
+
+    this.timer = new Timer();
+    this.timer.start();
 
     rotController.setSetpoint(LimelightConstants.ROT_SETPOINT_REEF_ALIGNMENT);
     rotController.setTolerance(LimelightConstants.ROT_TOLERANCE_REEF_ALIGNMENT);
@@ -69,7 +70,7 @@ public class AlignToReefAuto extends Command {
       double rotValue = -rotController.calculate(postions[4]);
       SmartDashboard.putNumber("test/rot pos", postions[4]);
 
-      swerve.drive(xSpeed * 35 , ySpeed * 35, rotValue, true, true, false);
+      swerve.drive(xSpeed * 35 , ySpeed * 35, rotValue, false, true, false);
 
       if (!rotController.atSetpoint() ||
           !yController.atSetpoint() ||

@@ -10,6 +10,7 @@ public class setCoralPower extends Command {
     private final CoralSubsystem coral;
     private final OI oi = OI.getInstance();
     private double power;
+    private double outtakePower;
 
     public setCoralPower(CoralSubsystem subsystem) {
         coral = subsystem;
@@ -23,14 +24,23 @@ public class setCoralPower extends Command {
     @Override
     public void execute() {
 
-        coral.setWristPower(oi.getOperatorRightY() * CoralConstants.WRIST_MAX_POWER);
+        coral.setWristPower(oi.getOperatorRightY()  * CoralConstants.WRIST_MAX_POWER);
 
         if (oi.getOperatorRightBumper()) {
-            power = .40;
-        } else { 
-            power = 0;
+            power = .2;
+        } else {
+            power = 0.0;
         }
-        coral.setFlywheelPower(power, oi.operatorRightTrigger());
+
+        if (oi.operatorRightTrigger() > 0) { 
+            outtakePower = 1.0;
+        } else if (oi.operatorLeftTrigger() > 0 ) { 
+            outtakePower = .4;
+        } else {
+            outtakePower = 0.0;
+        }
+
+        coral.setFlywheelPower(power, outtakePower);
         SmartDashboard.putNumber("OI/Wrist Power", oi.getOperatorRightY());
     }
 }

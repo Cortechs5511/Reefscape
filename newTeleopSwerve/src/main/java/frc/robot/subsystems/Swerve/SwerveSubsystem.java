@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Swerve;
 
+import static edu.wpi.first.units.Units.Rotation;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -15,7 +17,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,18 +34,22 @@ public class SwerveSubsystem extends SubsystemBase {
     private final PIDController[] drivePIDControllers;
     private final ProfiledPIDController[] turnPIDControllers;
     // private final PIDController[] turnPIDControllers;
+
     // Properties for Field oriented driving
-    private Gyro gyro;
+    private Gyro fieldGyro;
+    
+    // for resetting gyro
+    private Rotation2d gyroOffset = new Rotation2d();
+
     private SwerveDriveOdometry odometry;
-    private Field2d field;
+    private Field2d field = new Field2d();
 
     private XboxController driveController;
-    private double rotationCmd;
 
     public SwerveSubsystem() {
-        gyro = new Gyro();
-
-        // Initialize the swerve modulesi
+        fieldGyro = new Gyro();
+        gyroOffset = new Rotation2d();
+        // Initialize the swerve modules
         modules = new SwerveModule[] {
             new SwerveModule(SwerveConstants.IDS[0], SwerveConstants.IDS[1], SwerveConstants.IDS[2]),
             new SwerveModule(SwerveConstants.IDS[3], SwerveConstants.IDS[4], SwerveConstants.IDS[5]),
@@ -71,21 +76,13 @@ public class SwerveSubsystem extends SubsystemBase {
              new ProfiledPIDController(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION)),
              new ProfiledPIDController(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2], new TrapezoidProfile.Constraints(SwerveConstants.ANGLE_MAX_VELOCITY, SwerveConstants.ANGLE_MAX_ACCELERATION))  
         };
-
-        // turnPIDControllers = new PIDController[] {
-        //     new PIDController(SwerveConstants.DRIVE_PID_VALUES[0], SwerveConstants.DRIVE_PID_VALUES[1], SwerveConstants.DRIVE_PID_VALUES[2]),
-        //     new PIDController(SwerveConstants.DRIVE_PID_VALUES[0], SwerveConstants.DRIVE_PID_VALUES[1], SwerveConstants.DRIVE_PID_VALUES[2]),
-        //     new PIDController(SwerveConstants.DRIVE_PID_VALUES[0], SwerveConstants.DRIVE_PID_VALUES[1], SwerveConstants.DRIVE_PID_VALUES[2]),
-        //     new PIDController(SwerveConstants.DRIVE_PID_VALUES[0], SwerveConstants.DRIVE_PID_VALUES[1], SwerveConstants.DRIVE_PID_VALUES[2])
-        // };
-
         for (ProfiledPIDController p : turnPIDControllers) {
             p.enableContinuousInput(0, 2 * Math.PI);
         };
 
-        // For Field driving later 
-        odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), getPositions());
-        field = new Field2d();
+        // For Field driving 
+        odometry = new SwerveDriveOdometry(kinematics, fieldGyro.getRotation2d(), getPositions());
+        SmartDashboard.putData("Field", field);
 
         driveController = new XboxController(0);
 
@@ -100,7 +97,14 @@ public class SwerveSubsystem extends SubsystemBase {
                 this::getPose, // Robot pose supplier
                 this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                this:: driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+                (speeds, feedforwards) -> drive(
+                speeds.vxMetersPerSecond,
+                speeds.vyMetersPerSecond,
+                speeds.omegaRadiansPerSecond,
+                false,  // fieldRelative (assuming you want robot relative in auto)
+                false,  // alignLimelight
+                false   // resetGyro
+            ), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
                 new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
                         new PIDConstants(SwerveConstants.DRIVE_PID_VALUES[0], SwerveConstants.DRIVE_PID_VALUES[1], SwerveConstants.DRIVE_PID_VALUES[2]), // Translation PID constants
                         new PIDConstants(SwerveConstants.TURN_PID_VALUES[0], SwerveConstants.TURN_PID_VALUES[1], SwerveConstants.TURN_PID_VALUES[2]) // Rotation PID constants
@@ -125,40 +129,7 @@ public class SwerveSubsystem extends SubsystemBase {
         }
     }
 
-        private double getDesiredYawForTag(int tagID) {
-            switch (tagID) { 
-                // case 6:   
-                case 17:
-                case 7:
-                case 18:
-                    return Math.toRadians(-15);
-        
-                case 6:
-                case 19:
-                    return Math.toRadians(60);
-        
-                case 11:
-                case 20:
-                    return Math.toRadians(120);
-        
-                case 10:
-                case 21:
-                    return Math.toRadians(180);
-        
-                case 9:
-                case 22:
-                    return Math.toRadians(-120);
-        
-                case 8:
-                // case 17:
-                    return Math.toRadians(-60);
-        
-                default:
-                    return Math.toRadians(0);
-            }
-        }
-
-        // limelight stuff
+        // get limelight data
         public RawFiducial[] getLimelightData() {
             RawFiducial[] fiducials = LimelightHelpers.getRawFiducials("limelight-sublime");
         return fiducials;
@@ -174,133 +145,8 @@ public class SwerveSubsystem extends SubsystemBase {
             return postions[2];
         }
 
-        public double alignAngle() {
-            RawFiducial[] limelightData = getLimelightData();
-            if (limelightData.length == 0) {
-                return 0.0;
-            }
-            
-            PIDController alignLimelightPidController = new PIDController(10, 0, 0);
-
-            int tagID = limelightData[limelightData.length-1].id;
-        
-            double desiredYaw = getDesiredYawForTag(tagID); 
-
-            double currentYaw = gyro.getRotation2d().getRadians();
-            
-            rotationCmd = alignLimelightPidController.calculate(currentYaw, desiredYaw);
-
-            rotationCmd *= 8;
-            
-            return rotationCmd;
-        }
-
-        public double limelightAlignStrafe() {
-            double currentTx = 0 ; 
-            RawFiducial[] limelightData  = getLimelightData();
-
-            if (limelightData.length == 0) {
-                return 0;
-            }
-        
-            for (int i = 0; i < limelightData.length; i++) {
-                RawFiducial currentEntry = limelightData[i];
-                currentTx = currentEntry.txnc;
-            }
-
-            double strafeSpeed = -(currentTx - 4.8);
-            
-        //     if (2.1 <= currentTx && currentTx <= 2.6)  {
-        //         return 0.001; 
-        // }
-
-
-            if (Math.abs(strafeSpeed) <= 2) {
-                if (strafeSpeed > 0) {
-                    // strafeSpeed = (currentTx <= 13.2) ? 1 : 2;
-                    strafeSpeed = 2;
-                } else {
-                    // strafeSpeed = (currentTx >= 10.2) ? -1 : -2;
-                    strafeSpeed = -2;
-                }
-            }
-        
-            return strafeSpeed;
-        }
-
-        public double limelightAlignDrive() {
-            double speed = -5;
-            double currentTa = 0; 
-            int id = 0; 
-            // double limelightMountAngleDegrees = 0.0; 
-            // double limelightLensHeightInches = 8;
-            // double goalHeightInches = 9.5; 
-
-            RawFiducial[] limelightData  = getLimelightData();
-            for (int i = 0; i < limelightData.length; i++) {
-                RawFiducial currentEntry = limelightData[i];
-                currentTa = currentEntry.ta;
-                id = currentEntry.id;
-            }
-
-            if (id == 0) {
-                return 0;
-            }
-
-            speed =  100 * -(currentTa - .155);
-            // not sure best value for ta right now 
-            if (currentTa >= .155 && currentTa <= 0.17) {
-                return 0;
-            }
-        
-            if (Math.abs(speed) <= 2) {
-                if (speed > 0) {
-                    // speed = (currentTx <= 13.2) ? 1 : 2;
-                    speed = 2;
-                } else {
-                    // speed = (currentTx >= 10.2) ? -1 : -2;
-                    speed = -2;
-                }
-            }
-        
-            return speed;
-        }
-
-        public boolean txIsAligned() { 
-            double currentTx = 0 ; 
-            RawFiducial[] limelightData  = getLimelightData();
-            for (int i = 0; i < limelightData.length; i++) {
-                RawFiducial currentEntry = limelightData[i];
-                currentTx = currentEntry.txnc;
-            }  
-            return (currentTx > 4.6 && currentTx < 5);
-        }
-
-        public boolean taIsAligned() { 
-            double currentTa = 0 ; 
-            RawFiducial[] limelightData  = getLimelightData();
-            for (int i = 0; i < limelightData.length; i++) {
-                RawFiducial currentEntry = limelightData[i];
-                currentTa = currentEntry.ta;
-            }   
-            return (currentTa > .155 && currentTa < .18);
-        }
-
-        public boolean angleIsAligned() {
-            int id = 0;
-            RawFiducial[] limelightData  = getLimelightData();
-            for (int i = 0; i < limelightData.length; i++) {
-                RawFiducial currentEntry = limelightData[i];
-                id = currentEntry.id;
-            }   
-
-            double desiredAngle = getDesiredYawForTag(id);
-
-            return Math.abs(desiredAngle - gyro.getRotation2d().getRadians()) <= 0.005;
-        }
-
         public void resetGyro(double degrees) { 
-            gyro.resetGyro(degrees);
+            fieldGyro.resetGyro(degrees);
         }
 
     @Override 
@@ -310,11 +156,14 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("limelight/y pos", postions[0]);
         SmartDashboard.putNumber("limelight/rot pos", postions[4]);
 
-        
-
-
-        odometry.update(gyro.getRotation2d(), getPositions());
+        // pose stuff 
+        odometry.update(fieldGyro.getRotation2d(), getPositions());
         field.setRobotPose(getPose());
+        Pose2d pose = getPose();
+        SmartDashboard.putNumber("Pose X", pose.getX());
+        SmartDashboard.putNumber("Pose Y", pose.getY());
+        SmartDashboard.putNumber("Pose Rotation", pose.getRotation().getDegrees());
+
         // transfering the controller inputs into SwerveModuleState
         ChassisSpeeds controllerSpeeds = new ChassisSpeeds(
             SwerveConstants.MAX_TRANSLATIONAL_SPEED * -driveController.getLeftY(), 
@@ -355,7 +204,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
         // reset gyro button
         if (resetGyro) {
-            gyro.resetGyro(0);
+            gyroOffset = fieldGyro.getRotation2d();
         }
 
         // implementing field logic
@@ -382,16 +231,18 @@ public class SwerveSubsystem extends SubsystemBase {
         for (int i = 0; i < modules.length; i++) {
             positions[i] = modules[i].getPosition();
         }
-
+        SmartDashboard.putNumber("Swerve/SwerveModule distance", modules[0].getPosition().distanceMeters );
+        SmartDashboard.putNumber("Swerve/SwerveModule degree", modules[0].getPosition().angle.getDegrees() );
         return positions;
-    }
+    } 
 
     public void resetPose(Pose2d pose) {
-        odometry.resetPosition(gyro.getRotation2d(), getPositions(), pose);
+        odometry.resetPosition(fieldGyro.getRotation2d(), getPositions(), pose);
     }
 
     public void driveFieldRelative(ChassisSpeeds fieldRelativeSpeeds) {
-        driveRobotRelative(ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, getPose().getRotation()));
+        Rotation2d drivingAngle = fieldGyro.getRotation2d().minus(gyroOffset);
+        driveRobotRelative(ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, drivingAngle));
     }
 
     public void driveRobotRelative(ChassisSpeeds robotRelativeSpeeds) {
@@ -438,12 +289,14 @@ public class SwerveSubsystem extends SubsystemBase {
         };
         
         SmartDashboard.putNumberArray("Module State", loggingState);
-        SmartDashboard.putNumber("Gyro Radians", gyro.getRotation2d().getRadians());
+        SmartDashboard.putNumber("Gyro Radians", fieldGyro.getRotation2d().getRadians());
 
         SmartDashboard.putNumber("Swerve/FL Velocity", modules[0].getVelocity());
         SmartDashboard.putNumber("Swerve/FR Velocity", modules[1].getVelocity());
         SmartDashboard.putNumber("Swerve/BL Velocity", modules[2].getVelocity());
         SmartDashboard.putNumber("Swerve/BR Velocity", modules[3].getVelocity());
+
+        SmartDashboard.putString("Alliance Color", DriverStation.getAlliance().get().toString());
     }
     
 }
