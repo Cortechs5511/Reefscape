@@ -88,7 +88,7 @@ public class Elevator extends SubsystemBase {
     }
 
     
-    private double getAccumulatedRotations() {
+    public double getAccumulatedRotations() {
         double currentPos = TBEncoder.getPosition();
 
         if (Math.abs(currentPos - previousPos) < 0.5) {

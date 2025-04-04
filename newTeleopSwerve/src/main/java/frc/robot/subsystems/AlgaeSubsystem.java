@@ -55,19 +55,19 @@ public class AlgaeSubsystem extends SubsystemBase {
 
 
     // // PID for wrist
-    // public void setWristPosPID (double targetPos) {
-    //     double currentPos = TBEncoder.getPosition();
-    //     pidOutput = wristPIDController.calculate(currentPos, targetPos);
-    //     setWristPower(-pidOutput);
-    //     double error = Math.abs(currentPos - targetPos);
+    public void setWristPosPID (double targetPos) {
+        double currentPos = wristEncoder.getPosition();
+        double pidOutput = wristPIDController.calculate(currentPos, targetPos);
+        setWristPower(pidOutput);
+        double error = Math.abs(currentPos - targetPos);
         
-    //     // play around with error
-    //     if (error < CoralConstants.ERROR_TOLERANCE) {
-    //         setWristPower(0);
-    //         wristPIDController.setSetpoint(targetPos);
-    //         SmartDashboard.putBoolean("Coral/At Target", true);
-    //     }
-    // }
+        // play around with error
+        if (error < AlgaeConstants.WRIST_ERROR_TOLERANCE) {
+            setWristPower(0);
+            wristPIDController.setSetpoint(targetPos);
+            SmartDashboard.putBoolean("Coral/At Target", true);
+        }
+    }
 
     // public boolean atWristPos (double targetPos) { 
     //     double error = Math.abs(TBEncoder.getPosition() - targetPos);

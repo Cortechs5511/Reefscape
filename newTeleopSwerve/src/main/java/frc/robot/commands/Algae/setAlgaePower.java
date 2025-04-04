@@ -11,6 +11,7 @@ public class setAlgaePower extends Command {
     private final OI oi = OI.getInstance();
     private double power;
     private double wristPower;
+    private double flywheelPower;
 
     public setAlgaePower(AlgaeSubsystem subsystem) {
         algae = subsystem;
@@ -26,15 +27,18 @@ public class setAlgaePower extends Command {
 
         if (oi.operatorPOV() == 0) { 
             wristPower = 1; 
+            algae.setWristPower(wristPower * AlgaeConstants.WRIST_MAX_POWER);
         } else if (oi.operatorPOV() == 180) { 
             wristPower = -1; 
+            algae.setWristPower(wristPower * AlgaeConstants.WRIST_MAX_POWER);
+            flywheelPower = 1.0;
         } else {
             wristPower = 0.0;
+            flywheelPower = 0;
+            algae.setWristPosPID(0);
         }
 
-        algae.setWristPower(wristPower * AlgaeConstants.WRIST_MAX_POWER);
-
-        algae.setFlywheelPower(oi.operatorLeftTrigger());
+        algae.setFlywheelPower(flywheelPower);
         SmartDashboard.putNumber("OI/Wrist Power", oi.getOperatorRightY());
     }
 }

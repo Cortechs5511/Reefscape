@@ -7,6 +7,8 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Auto.AlignToReefAuto;
 import frc.robot.commands.Auto.RelocalizeWithLimelight;
+import frc.robot.commands.Auto.algifyBottom;
+import frc.robot.commands.Auto.driveToLeftReef;
 import frc.robot.commands.Auto.l2auto;
 import frc.robot.commands.Auto.l4auto;
 import frc.robot.commands.Auto.taxiAuto;
@@ -24,9 +26,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.Coral.setCoralPower;
 import frc.robot.commands.Coral.setWristPosition;
+import frc.robot.commands.Algae.setAlgaePosition;
 import frc.robot.commands.Algae.setAlgaePower;
 import frc.robot.commands.Elevator.setElevatorPosition;
 import frc.robot.commands.Elevator.setElevatorPower;
@@ -62,28 +66,34 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {    
-
-    // loading named commands
-    NamedCommands.registerCommand("alignToReef", new AlignToReefAuto(false, m_swerveSubsystem));
-    NamedCommands.registerCommand("l2auto", new l2auto(m_swerveSubsystem, m_coral, m_elevator));
-    NamedCommands.registerCommand("l4auto", new l4auto(m_swerveSubsystem, m_coral, m_elevator));
-
-
     autoChooser = AutoBuilder.buildAutoChooser();
-    autoChooser.addOption("taxi", new SequentialCommandGroup (new taxiAuto (m_swerveSubsystem, m_coral, m_elevator)));
+    autoChooser.addOption("taxi", new SequentialCommandGroup (new taxiAuto (m_swerveSubsystem, m_coral, m_elevator, m_algae)));
     autoChooser.addOption("l2",
-    new SequentialCommandGroup(new taxiAuto(m_swerveSubsystem, m_coral, m_elevator),
+    new SequentialCommandGroup(new taxiAuto(m_swerveSubsystem, m_coral, m_elevator, m_algae),
     new AlignToReefAuto(true, m_swerveSubsystem), 
     new l2auto(m_swerveSubsystem, m_coral, m_elevator), 
     new driveToRightReef(m_swerveSubsystem), 
     new AlignToReefAuto(true, m_swerveSubsystem)
     // command for algifying
     ));
-    autoChooser.addOption("l4",
-    new SequentialCommandGroup(new taxiAuto(m_swerveSubsystem, m_coral, m_elevator),
+    autoChooser.addOption("l4 right",
+    new SequentialCommandGroup(new taxiAuto(m_swerveSubsystem, m_coral, m_elevator, m_algae),
     new AlignToReefAuto(true, m_swerveSubsystem), 
-    new l4auto(m_swerveSubsystem, m_coral, m_elevator), 
-    new resetPose(m_swerveSubsystem)
+    new l4auto(m_swerveSubsystem, m_coral, m_elevator, m_algae), 
+    new resetPose(m_swerveSubsystem),
+    new driveToRightReef(m_swerveSubsystem),
+    new AlignToReefAuto(true, m_swerveSubsystem), 
+    new algifyBottom(m_swerveSubsystem, m_coral, m_elevator, m_algae)
+    ));
+
+    autoChooser.addOption("l4 left",
+    new SequentialCommandGroup(new taxiAuto(m_swerveSubsystem, m_coral, m_elevator, m_algae),
+    new AlignToReefAuto(true, m_swerveSubsystem), 
+    new l4auto(m_swerveSubsystem, m_coral, m_elevator, m_algae), 
+    new resetPose(m_swerveSubsystem),
+    new driveToLeftReef(m_swerveSubsystem),
+    new AlignToReefAuto(true, m_swerveSubsystem), 
+    new algifyBottom(m_swerveSubsystem, m_coral, m_elevator, m_algae)
     ));
 
     SmartDashboard.putData("Auto chooser", autoChooser);
@@ -111,24 +121,27 @@ public class RobotContainer {
     // cancelling on release. 
     
     // limelight stuff
-    m_driverController.a().whileTrue(new AlignToReefTagRelative(true, m_swerveSubsystem));
-    m_driverController.b().whileTrue(new alignToRightReef(m_swerveSubsystem));
+    m_driverController.leftBumper().whileTrue(new AlignToReefTagRelative(true, m_swerveSubsystem));
+    m_driverController.rightBumper().whileTrue(new alignToRightReef(m_swerveSubsystem));
   
+
     m_driverController.y().whileTrue(new driveToRightReef(m_swerveSubsystem));
 
 
     // driving position (bottom) 
-    m_operatorController.a().whileTrue(new setWristPosition(m_coral, .42)).whileTrue(new setElevatorPosition(m_elevator, 0, false));
+    m_operatorController.a().whileTrue(new setWristPosition(m_coral, .33)).whileTrue(new setElevatorPosition(m_elevator, 0, false));
     // l2
-    m_operatorController.x().whileTrue(new setWristPosition(m_coral, 0.6)).whileTrue(new setElevatorPosition(m_elevator, 0, false));
+    m_operatorController.x().whileTrue(new setWristPosition(m_coral, 0.5)).whileTrue(new setElevatorPosition(m_elevator, 0, false));
     // l3
-    m_operatorController.b().whileTrue(new setWristPosition(m_coral, 0.645)).whileTrue(new setElevatorPosition(m_elevator, 1.8, false));
+    m_operatorController.b().whileTrue(new setWristPosition(m_coral, 0.375)).whileTrue(new setElevatorPosition(m_elevator, .98, false));
     // l4 wrist
-    m_operatorController.y().whileTrue(new setWristPosition(m_coral, 0.578));
+    m_operatorController.y().whileTrue(new setWristPosition(m_coral, 0.45));
     // l4 elevator
     m_operatorController.leftStick().whileTrue(new setElevatorPosition(m_elevator, 3.55, false));
     // intake
-    m_operatorController.leftBumper().whileTrue(new setWristPosition(m_coral, 0.65)).whileTrue(new setElevatorPosition(m_elevator, .85, false));
+    m_operatorController.leftBumper().whileTrue(new setWristPosition(m_coral, 0.77)).whileTrue(new setElevatorPosition(m_elevator, 1.55, false));
+    // algae 
+    m_operatorController.povRight().whileTrue(new setAlgaePosition(m_algae, -1));
 }
 
   /**\[]\[]

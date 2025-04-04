@@ -15,7 +15,7 @@ import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
-public class l4auto extends Command {
+public class algifyBottom extends Command {
     private final SwerveSubsystem m_swerve;
     private final CoralSubsystem m_coral;
     private final Elevator m_elevator;
@@ -27,7 +27,7 @@ public class l4auto extends Command {
 
     private final Timer timer = new Timer();
 
-    public l4auto(SwerveSubsystem swerve, CoralSubsystem coral, Elevator elevator, AlgaeSubsystem algae) {
+    public algifyBottom(SwerveSubsystem swerve, CoralSubsystem coral, Elevator elevator, AlgaeSubsystem algae) {
         this.m_swerve = swerve;
         this.m_coral = coral;
         this.m_elevator = elevator;
@@ -51,13 +51,12 @@ public class l4auto extends Command {
     @Override
     public void execute() {
         m_coral.setWristPosPID(.45);
-        m_elevator.setPositionPID(3.55);
+        m_elevator.setPositionPID(2.8);
 
-        if (timer.hasElapsed(2.8) && !timer.hasElapsed((3.4))) {
-            m_coral.setFlywheelPower(0, 1.0);
+        if (timer.hasElapsed(2.5) && !timer.hasElapsed((3.0))) {
             m_algae.setWristPower(-AlgaeConstants.WRIST_MAX_POWER);
             m_algae.setFlywheelPower(1.0);
-        } else if (timer.hasElapsed(3.4)) {
+        } else if (timer.hasElapsed(3.5)) {
             double driveBackSpeed = driveController.calculate(m_swerve.getPose().getX());
             m_swerve.drive(driveBackSpeed * 15, 0, 0, false, true, false);
             m_coral.setFlywheelPower(0, 0);
@@ -71,6 +70,6 @@ public class l4auto extends Command {
 
     @Override
     public boolean isFinished() {
-        return (m_elevator.getAccumulatedRotations() < .3 && timer.hasElapsed(3.4));
+        return (m_elevator.getAccumulatedRotations() < .3 && timer.hasElapsed(3.25));
     }
 }

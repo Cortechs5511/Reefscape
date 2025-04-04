@@ -37,7 +37,7 @@ public class driveToLeftReef extends Command{
         swerve.resetPose(new Pose2d());
         
         currentPose = swerve.getPose(); 
-        targetPose = currentPose.plus(new Transform2d(0.0 , 1.5, new Rotation2d().rotateBy(currentPose.getRotation().plus(new Rotation2d(1.0472)))));
+        targetPose = currentPose.plus(new Transform2d(0.0 , 1.75, new Rotation2d().rotateBy(currentPose.getRotation().plus(new Rotation2d(1.0472)))));
 
         SmartDashboard.putNumber("alignToRight/target pose angle", targetPose.getRotation().getDegrees());
         SmartDashboard.putNumber("alignToRight/current pose angle", currentPose.getRotation().getDegrees());
@@ -65,7 +65,7 @@ public class driveToLeftReef extends Command{
             SmartDashboard.putNumber("driveToRight/speed", speed);
             SmartDashboard.putNumber("driveToRight", stopTimer.get());
     
-            swerve.drive(0, speed * 35 , rotspeed * 10, false, true, false);
+            swerve.drive(0, speed * 45 , rotspeed * 15, false, true, false);
     
             if (!driveController.atSetpoint()) {
             stopTimer.reset();
@@ -78,6 +78,6 @@ public class driveToLeftReef extends Command{
 
     @Override 
     public boolean isFinished () { 
-        return (stopTimer.hasElapsed(.5));
+        return (timer.hasElapsed(1.25));
     }
 }
