@@ -145,8 +145,8 @@ public class SwerveSubsystem extends SubsystemBase {
             return postions[2];
         }
 
-        public void resetGyro(double degrees) { 
-            fieldGyro.resetGyro(degrees);
+        public void resetGyro(double angle) { 
+            gyroOffset = fieldGyro.getRotation2d().plus(new Rotation2d(Math.toRadians(angle)));
         }
 
     @Override 

@@ -18,15 +18,10 @@ public class setAlgaePosition extends Command {
     }
 
     @Override
-    public void initialize() {
-        algae.setWristPosPID(position);
-        algae.setFlywheelPower(1);
-    }
-
-    @Override
     public void execute() {
 
-        algae.setFlywheelPower(oi.operatorLeftTrigger());
+        algae.setWristPosPID(position);
+        algae.setFlywheelPower(1);
         SmartDashboard.putNumber("OI/Wrist Power", oi.getOperatorRightY());
     }
 }

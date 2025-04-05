@@ -11,6 +11,7 @@ import frc.robot.commands.Auto.algifyBottom;
 import frc.robot.commands.Auto.driveToLeftReef;
 import frc.robot.commands.Auto.l2auto;
 import frc.robot.commands.Auto.l4auto;
+import frc.robot.commands.Auto.resetGyro;
 import frc.robot.commands.Auto.taxiAuto;
 import frc.robot.commands.Auto.resetPose;
 import frc.robot.commands.Auto.driveToRightReef;
@@ -68,6 +69,7 @@ public class RobotContainer {
   public RobotContainer() {    
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("taxi", new SequentialCommandGroup (new taxiAuto (m_swerveSubsystem, m_coral, m_elevator, m_algae)));
+    
     autoChooser.addOption("l2",
     new SequentialCommandGroup(new taxiAuto(m_swerveSubsystem, m_coral, m_elevator, m_algae),
     new AlignToReefAuto(true, m_swerveSubsystem), 
@@ -76,29 +78,43 @@ public class RobotContainer {
     new AlignToReefAuto(true, m_swerveSubsystem)
     // command for algifying
     ));
+
     autoChooser.addOption("l4 right",
-    new SequentialCommandGroup(new taxiAuto(m_swerveSubsystem, m_coral, m_elevator, m_algae),
-    new AlignToReefAuto(true, m_swerveSubsystem), 
-    new l4auto(m_swerveSubsystem, m_coral, m_elevator, m_algae), 
-    new resetPose(m_swerveSubsystem),
-    new driveToRightReef(m_swerveSubsystem),
-    new AlignToReefAuto(true, m_swerveSubsystem), 
-    new algifyBottom(m_swerveSubsystem, m_coral, m_elevator, m_algae)
+    new SequentialCommandGroup(
+      new taxiAuto(m_swerveSubsystem, m_coral, m_elevator, m_algae),
+      new AlignToReefAuto(true, m_swerveSubsystem), 
+      // new resetGyro(m_swerveSubsystem, 240),
+      new l4auto(m_swerveSubsystem, m_coral, m_elevator, m_algae), 
+      new resetPose(m_swerveSubsystem),
+      new driveToRightReef(m_swerveSubsystem),
+      new AlignToReefAuto(true, m_swerveSubsystem), 
+      new algifyBottom(m_swerveSubsystem, m_coral, m_elevator, m_algae)
     ));
 
     autoChooser.addOption("l4 left",
-    new SequentialCommandGroup(new taxiAuto(m_swerveSubsystem, m_coral, m_elevator, m_algae),
-    new AlignToReefAuto(true, m_swerveSubsystem), 
-    new l4auto(m_swerveSubsystem, m_coral, m_elevator, m_algae), 
-    new resetPose(m_swerveSubsystem),
-    new driveToLeftReef(m_swerveSubsystem),
-    new AlignToReefAuto(true, m_swerveSubsystem), 
-    new algifyBottom(m_swerveSubsystem, m_coral, m_elevator, m_algae)
+    new SequentialCommandGroup(
+      new taxiAuto(m_swerveSubsystem, m_coral, m_elevator, m_algae),
+      new AlignToReefAuto(true, m_swerveSubsystem), 
+      // new resetGyro(m_swerveSubsystem, 120),
+      new l4auto(m_swerveSubsystem, m_coral, m_elevator, m_algae), 
+      new resetPose(m_swerveSubsystem),
+      new driveToLeftReef(m_swerveSubsystem),
+      new AlignToReefAuto(true, m_swerveSubsystem), 
+      new algifyBottom(m_swerveSubsystem, m_coral, m_elevator, m_algae)
     ));
+
+    autoChooser.addOption("l4 middle",
+    new SequentialCommandGroup(
+      new taxiAuto(m_swerveSubsystem, m_coral, m_elevator, m_algae),
+      new AlignToReefAuto(true, m_swerveSubsystem), 
+      new resetGyro(m_swerveSubsystem, 180),
+      new l4auto(m_swerveSubsystem, m_coral, m_elevator, m_algae), 
+      new algifyBottom(m_swerveSubsystem, m_coral, m_elevator, m_algae)
+      ));
 
     SmartDashboard.putData("Auto chooser", autoChooser);
     // Configure the trigger bindings
-    m_swerveSubsystem.setDefaultCommand(new swerveDrive(m_swerveSubsystem));
+    m_swerveSubsystem.setDefaultCommand(new swerveDrive(m_swerveSubsystem, m_elevator));
     m_elevator.setDefaultCommand(new setElevatorPower(m_elevator));
     m_coral.setDefaultCommand(new setCoralPower(m_coral));
     m_algae.setDefaultCommand(new setAlgaePower(m_algae));
@@ -141,7 +157,8 @@ public class RobotContainer {
     // intake
     m_operatorController.leftBumper().whileTrue(new setWristPosition(m_coral, 0.77)).whileTrue(new setElevatorPosition(m_elevator, 1.55, false));
     // algae 
-    m_operatorController.povRight().whileTrue(new setAlgaePosition(m_algae, -1));
+    m_operatorController.povRight().whileTrue(new setAlgaePosition(m_algae, -7.5));
+
 }
 
   /**\[]\[]

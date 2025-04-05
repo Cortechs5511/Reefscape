@@ -65,7 +65,7 @@ public class driveToRightReef extends Command{
             SmartDashboard.putNumber("driveToRight/speed", speed);
             SmartDashboard.putNumber("driveToRight", stopTimer.get());
     
-            swerve.drive(0, speed * 45 , rotspeed * 15, false, true, false);
+            swerve.drive(0, speed * 45 , rotspeed * 20, false, true, false);
     
             if (!driveController.atSetpoint()) {
             stopTimer.reset();
