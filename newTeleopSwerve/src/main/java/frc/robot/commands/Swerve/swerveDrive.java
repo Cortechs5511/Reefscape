@@ -76,7 +76,7 @@ public class swerveDrive extends Command{
                     yValue = .001;
                 }
             } else {
-                yValue = -.1;
+                yValue = .1;
             }
         } else {
             timer.restart();
